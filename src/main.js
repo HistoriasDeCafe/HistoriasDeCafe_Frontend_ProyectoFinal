@@ -1,15 +1,14 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router'
 
-// 1. Importar el JS de Bootstrap (NECESARIO para que el carrusel se mueva)
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-
-// 2. Estilos base
 import './assets/css/paletaColores.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
+const app = createApp(App)
 
-createApp(App).mount('#app')
+app.use(router)
+
+app.mount('#app')

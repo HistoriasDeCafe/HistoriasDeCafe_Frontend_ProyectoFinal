@@ -49,11 +49,13 @@
             <div v-if="cartCount > 0" class="badge-dot3">{{ cartCount }}</div>
           </button>
 
-          <!-- Acciones de Usuario Profesionales -->
-          <div class="auth-wrapper">
-            <a class="login-link" @click.prevent="navigate('/login')">Ingresar</a>
-            <button class="cta-primary" @click="navigate('/registro')">Registro</button>
-          </div>
+          <!-- Acciones de Usuario-->
+          <!-- En MainNavbar.vue -->
+        <div class="auth-wrapper">
+          <router-link to="/auth" class="login-link">Ingresar</router-link>
+          <router-link to="/auth" class="cta-primary">Registro</router-link>
+        </div>
+
         </div>
       </div>
     </nav>
@@ -70,7 +72,7 @@ defineProps({
   }
 });
 
-defineEmits(['open-cart']);
+const emit = defineEmits(['open-cart', 'change-page']);
 
 const isAnimating = ref(false);
 const isMenuOpen = ref(false);

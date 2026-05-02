@@ -135,12 +135,10 @@ const irAPagar = () => {
 
 <style scoped>
 
-/*fondo oscuro detrás del carrito */
-
 .carrito-overlay {
   display: none;
   position: fixed;
-  inset: 0;                          /* top/right/bottom/left: 0 */
+  inset: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 1040;
   transition: opacity 0.3s ease;
@@ -155,7 +153,7 @@ const irAPagar = () => {
 .carrito-sidebar {
   position: fixed;
   top: 0;
-  right: -480px;                     /* oculto fuera de pantalla */
+  right: -480px;
   width: 440px;
   max-width: 95vw;
   height: 100vh;
