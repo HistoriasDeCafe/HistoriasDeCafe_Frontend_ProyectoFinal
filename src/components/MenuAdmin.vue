@@ -34,7 +34,6 @@ const menuItems = [
 </script>
 
 <style scoped>
-/* Aquí pegas el CSS de tu Sidebar que pasaste */
 .sidebar {
   width: 160px;
   background-color: #532721; /* var(--color-primary) */
