@@ -44,9 +44,9 @@
 
         <div class="nav-actions">
           <!-- Carrito con Badge -->
-          <button class="icon-btn3" @click="navigate('/carrito')">
+          <button class="icon-btn3" @click="$emit('open-cart')">
             <img src="/assets/icons/carritoCafe2.svg" alt="carrito" class="carrito-icon">
-            <div class="badge-dot3">0</div>
+            <div v-if="cartCount > 0" class="badge-dot3">{{ cartCount }}</div>
           </button>
 
           <!-- Acciones de Usuario Profesionales -->
@@ -62,6 +62,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+
+defineProps({
+  cartCount: {
+    type: Number,
+    default: 0
+  }
+});
+
+defineEmits(['open-cart']);
 
 const isAnimating = ref(false);
 const isMenuOpen = ref(false);

@@ -16,6 +16,8 @@
 import { ref, onMounted, computed } from "vue";
 import ProductCard from "../components/ProductCard.vue";
 
+const emit = defineEmits(['add-to-cart'])
+
 const productosEstaticos = ref([
   {
     nombre: "Neblina Dorada",
@@ -113,6 +115,7 @@ const listaCompleta = computed(() => {
 
 const agregarAlCarrito = (producto) => {
   console.log("Agregando:", producto.nombre);
+  emit('add-to-cart', producto);    
 };
 </script>
 
