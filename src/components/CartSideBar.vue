@@ -112,7 +112,7 @@ const eliminarItem = (nombre) => {
   });
 };
 
-const irAPagar = () => {
+const irAPagar = async () => {
   if (props.items.length === 0) {
     Swal.fire({
       title: "Carrito vacío",
@@ -123,13 +123,49 @@ const irAPagar = () => {
     return;
   }
 
-  Swal.fire({
-    title: "¡Pedido recibido!",
-    text: "Te redirigiremos al pago",
-    icon: "success",
-    confirmButtonColor: "#3e2723",
-  });
-};
+  try {
+    Swal.fire({
+      title: 'Procesando pedido...',
+      text: 'Estamos preparando tu pago seguro',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    const paymentData = {
+      title: "Compra en Historias de Café",
+      price: subtotal.value,
+      quantity: 1
+    };
+
+    const response = await fetch('http://localhost:8080/api/payments/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(paymentData)
+    });
+
+    if (!response.ok) throw new Error('Error en el servidor');
+
+    const data = await response.json();
+
+    if (data.initPoint) {
+      window.location.href = data.initPoint;
+    } else {
+      throw new Error('No se recibió la URL de pago');
+    }
+
+  } catch (error) {
+    console.error("Error al procesar pago:", error);
+    Swal.fire({
+      title: "Error",
+      text: "No pudimos conectar con la pasarela de pago.",
+      icon: "error",
+      confirmButtonColor: "#3e2723",
+    });
+  }
+}; 
+
 </script>
 
 
