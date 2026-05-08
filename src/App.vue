@@ -26,7 +26,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import MainNavbar from './components/MainNavbar.vue'
 import Footer from './components/Footer.vue'
-import CartSidebar from './components/CartSidebar.vue'
+import CartSidebar from './components/CartSideBar.vue'
 
 const route = useRoute()
 const isCartOpen = ref(false)
