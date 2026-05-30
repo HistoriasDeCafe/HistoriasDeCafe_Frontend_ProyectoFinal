@@ -6,8 +6,8 @@
         <!-- LOGO + DESCRIPCIÓN -->
         <div class="col-md-4 mb-4">
           <div class="d-flex align-items-center gap-3 mb-3">
-            <img src="/assets/img/logo.png" alt="logo" class="footer-logo">
-            <h5 class="footer-title mb-0">Historias de Café</h5>
+            <img src="/assets/img/logo-dark.svg" alt="logo" class="footer-logo">
+            <!-- <h5 class="footer-title mb-0">Historias de Café</h5> -->
           </div>
 
           <p class="footer-text">
@@ -26,9 +26,8 @@
         <div class="col-md-4 mb-4">
           <h6 class="footer-subtitle">Navegación</h6>
           <ul class="footer-links">
-            <!-- Nota: Más adelante usaremos <router-link> en lugar de <a> -->
-            <li><a href="#">Acerca de Nosotros</a></li>
-            <li><a href="#">Contáctanos</a></li>
+            <li><router-link to="/nosotros">Acerca de Nosotros</router-link></li>
+            <li><router-link to="/contacto">Contáctanos</router-link></li>
           </ul>
         </div>
 
@@ -103,14 +102,14 @@ width: 100%;
 }
 
 .footer-text {
-    color: rgba(255,255,255,0.85);
+    color: #ddd;
     font-size: 0.95rem;
     line-height: 1.5;
 }
 
 .footer-links a {
     text-decoration: none;
-    color: #ccc;
+    color: rgba(255,255,255,0.8);
     transition: 0.3s;
 }
 
@@ -128,14 +127,14 @@ width: 100%;
     padding: 0;
 }
 
-.footer-logo {
+/* .footer-logo {
     width: 55px;
     height: 55px;
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid var(--color-secondary);
     transition: 0.4s ease;
-}
+} */
 
 .footer-logo:hover {
     box-shadow: 

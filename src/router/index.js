@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import CatalogView from '../views/CatalogView.vue'
 import AdminView from '../views/AdminView.vue'
 import AuthView from '../views/AuthView.vue'
@@ -6,12 +7,12 @@ import ContactView from '../views/ContactView.vue'
 import AboutView from '../views/AboutView.vue'
 
 const routes = [
-  { path: '/', redirect: '/catalogo' },
+  { path: '/', name: 'Home', component: HomeView },
   { path: '/catalogo', name: 'Catalog', component: CatalogView },
   { path: '/admin', name: 'Admin', component: AdminView },
   { path: '/auth', name: 'Auth', component: AuthView },
   { path: '/contacto', name: 'Contact', component: ContactView },
-  {path: '/nosotros', name: 'About', component: AboutView}
+  { path: '/nosotros', name: 'About', component: AboutView }
 ]
 
 const router = createRouter({

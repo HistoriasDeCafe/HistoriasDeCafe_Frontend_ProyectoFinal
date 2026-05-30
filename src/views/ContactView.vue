@@ -1,88 +1,97 @@
 <template>
-  <section class="contact-section d-flex align-items-center py-5">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-          <!-- CARD CON EFECTO GLASSMORPISM -->
-          <div class="contact-card shadow-lg">
-            <div class="text-center mb-4">
-              <h2 class="titulo-cafe">Contáctanos</h2>
-              <p class="text-muted">¿Tienes dudas sobre nuestro café? <br> Estamos aquí para escucharte.</p>
-            </div>
-
-            <form @submit.prevent="handleSubmit" novalidate>
-              <!-- NOMBRE -->
-              <div class="mb-3">
-                <label for="name" class="form-label">Nombre Completo</label>
-                <input 
-                  v-model="form.name"
-                  type="text" 
-                  id="name" 
-                  class="form-control" 
-                  :class="{ 'is-invalid': errors.name }"
-                  placeholder="Tu nombre"
-                >
-                <div class="invalid-feedback">{{ errors.name }}</div>
-              </div>
-
-              <!-- EMAIL -->
-              <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input 
-                  v-model="form.email"
-                  type="email" 
-                  id="email" 
-                  class="form-control" 
-                  :class="{ 'is-invalid': errors.email }"
-                  placeholder="ejemplo@correo.com"
-                >
-                <div class="invalid-feedback">{{ errors.email }}</div>
-              </div>
-
-              <!-- TELÉFONO -->
-              <div class="mb-3">
-                <label for="number" class="form-label">Teléfono / WhatsApp</label>
-                <input 
-                  v-model="form.number"
-                  type="tel" 
-                  id="number" 
-                  class="form-control" 
-                  :class="{ 'is-invalid': errors.number }"
-                  placeholder="Mínimo 10 dígitos"
-                >
-                <div class="invalid-feedback">{{ errors.number }}</div>
-              </div>
-
-              <!-- MENSAJE -->
-              <div class="mb-4">
-                <label for="message" class="form-label">Mensaje</label>
-                <textarea 
-                  v-model="form.message"
-                  id="message" 
-                  rows="4" 
-                  class="form-control" 
-                  :class="{ 'is-invalid': errors.message }"
-                  placeholder="¿En qué podemos ayudarte?"
-                ></textarea>
-                <div class="invalid-feedback">{{ errors.message }}</div>
-              </div>
-
-              <!-- BOTÓN ENVIAR -->
-              <div class="text-center">
-                <button type="submit" class="btn btnEnviar">
-                  <i class="fa-solid fa-paper-plane me-2"></i> Enviar Mensaje
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+  <main class="container" style="padding-top: 160px; padding-bottom: 80px;">
+    <div class="row shadow-lg rounded-4 overflow-hidden g-0" style="background: linear-gradient(135deg, rgba(245, 240, 232, 0.95) 0%, rgba(228, 219, 191, 0.9) 100%); backdrop-filter: blur(10px);">
+      
+      <!-- Columna de la Imagen -->
+      <div class="col-md-7 d-none d-md-block p-0">
+        <img src="/assets/img/herencia&cultivo.png" alt="Cosecha de Café" 
+             class="img-fluid h-100 w-100 object-fit-cover">
       </div>
+
+      <div class="col-md-5 p-4 p-md-5 contact-form-inner">
+        <div class="mb-4 header-contact">
+          <span class="coffee-badge mb-2 d-inline-block"><i class="fa-solid fa-mug-hot me-2"></i>Contacto Directo</span>
+          <h2 style="font-family: 'Playfair Display', serif; color: var(--color-primary);" class="fw-bold display-6">Escríbenos</h2>
+          <p class="text-muted lead-sm">Tu opinión es el aroma de nuestro servicio</p>
+        </div>
+
+        <form @submit.prevent="handleSubmit" class="row g-4" novalidate>
+          <div class="col-12">
+            <label class="form-label" for="name">Nombre</label>
+            <div class="input-group-custom">
+              <input 
+                v-model="form.name"
+                type="text" 
+                class="form-control" 
+                id="name" 
+                name="name"
+                placeholder="Tu nombre completo" 
+                required
+                :class="{ 'is-invalid': errors.name }"
+              >
+              <div class="invalid-feedback">{{ errors.name }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="email">Correo Electrónico</label>
+            <input 
+              v-model="form.email"
+              type="email" 
+              class="form-control" 
+              id="email" 
+              name="email"
+              placeholder="nombre@ejemplo.com" 
+              required
+              :class="{ 'is-invalid': errors.email }"
+            >
+            <div class="invalid-feedback">{{ errors.email }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="number">Teléfono</label>
+            <input 
+              v-model="form.number"
+              type="tel" 
+              class="form-control" 
+              id="number" 
+              name="number"
+              placeholder="+57 300 000 0000" 
+              :class="{ 'is-invalid': errors.number }"
+            >
+            <div class="invalid-feedback">{{ errors.number }}</div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="message">Mensaje</label>
+            <textarea 
+              v-model="form.message"
+              class="form-control" 
+              id="message" 
+              name="message"
+              rows="4" 
+              required
+              placeholder="Cuéntanos cómo podemos ayudarte o qué historia quieres compartir..."
+              :class="{ 'is-invalid': errors.message }"
+            ></textarea>
+            <div class="invalid-feedback">{{ errors.message }}</div>
+          </div>
+
+          <div class="col-12 text-end mt-4">
+            <button type="submit" class="btnEnviar btn w-100 w-md-auto text-uppercase">
+              Enviar Mensaje <i class="bi bi-send-fill ms-2"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      
     </div>
-  </section>
+  </main>
 </template>
 
 <script setup>
 import { reactive } from 'vue';
+import Swal from 'sweetalert2';
 
 // Estado del formulario
 const form = reactive({
@@ -100,7 +109,7 @@ const errors = reactive({
   message: ''
 });
 
-// Lógica de Validación (Migrada de tu JS original)
+// Lógica de Validación
 const validate = () => {
   let isValid = true;
   
@@ -114,7 +123,7 @@ const validate = () => {
   } else if (form.name.length < 3) {
     errors.name = "Mínimo 3 caracteres";
     isValid = false;
-  } else if (!/^[a-zA-Z\s]+$/.test(form.name)) {
+  } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(form.name)) {
     errors.name = "Solo letras y espacios";
     isValid = false;
   }
@@ -129,8 +138,8 @@ const validate = () => {
     isValid = false;
   }
 
-  // Validar Teléfono
-  if (form.number.length < 10 || !/^[0-9+\s]+$/.test(form.number)) {
+  // Validar Teléfono (opcional)
+  if (form.number && (form.number.length < 10 || !/^[0-9+\s]+$/.test(form.number))) {
     errors.number = "Teléfono inválido (mín. 10 dígitos)";
     isValid = false;
   }
@@ -147,126 +156,240 @@ const validate = () => {
   return isValid;
 };
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (validate()) {
-    console.log("¡Formulario validado con éxito!", form);
-    alert("¡Mensaje enviado con éxito! Pronto nos contactaremos contigo.");
-    
-    // Limpiar formulario tras éxito
-    Object.keys(form).forEach(key => form[key] = '');
+    try {
+      // Enviar a Formspree usando fetch
+      const response = await fetch('https://formspree.io/f/xlgajpkq', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(form)
+      });
+
+      if (response.ok) {
+        // Mostrar SweetAlert profesional con tema de café
+        Swal.fire({
+          title: '¡Mensaje Recibido!',
+          text: 'Gracias por contactarnos. Tu mensaje ha sido recibido como una taza recién preparada. Te responderemos pronto con el mismo cuidado que ponemos en cada grano de café.',
+          icon: 'success',
+          confirmButtonText: 'Excelente',
+          confirmButtonColor: '#532721',
+          background: '#fdfcfb',
+          color: '#532721',
+          customClass: {
+            popup: 'swal-coffee-popup',
+            title: 'swal-coffee-title',
+            confirmButton: 'swal-coffee-button'
+          }
+        });
+        
+        // Limpiar formulario tras éxito
+        Object.keys(form).forEach(key => form[key] = '');
+      } else {
+        throw new Error('Error al enviar el mensaje');
+      }
+    } catch (error) {
+      Swal.fire({
+        title: '¡Ups!',
+        text: 'Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo, como cuando se prepara una taza perfecta.',
+        icon: 'error',
+        confirmButtonText: 'Intentar de nuevo',
+        confirmButtonColor: '#532721'
+      });
+    }
   }
 };
 </script>
 
 <style scoped>
-/* SECCIÓN Y FONDO */
-.contact-section {
-    min-height: 90vh;
-    position: relative;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+:root {
+  --color-primary: #532721;
+  --color-primary-active: #3d1c18;
+  --color-secondary: #B08D57;
+  --color-secondary-muted: rgba(176, 141, 87, 0.6);
+  --color-accent: #5F6335;
+  --color-background: #E4DBBF;
+  --color-text-default: #1A1A1A;
+  --color-border-default: #B08D57;
 }
 
-.titulo-cafe {
-    color: #6f4e37;
-    font-weight: 700;
-    letter-spacing: -1px;
-}
-
-/* CARD GLASSMORPISM */
-.contact-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(176, 141, 87, 0.2);
-    border-radius: 25px;
-    padding: 40px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* INPUTS ESTILIZADOS */
-.form-label {
-    color: #6f4e37;
-    font-weight: 600;
-    margin-left: 5px;
-}
-
-/* App.vue o ContactView.vue <style scoped> */
-
-.form-control {
-    background: rgba(255, 255, 255, 0.9);
-    
-    /* CAMBIO CLAVE: Borde sutil visible desde el inicio */
-    border: 1px solid rgba(111, 78, 55, 0.3); 
-    
-    border-radius: 12px;
-    padding: 12px 15px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #532721; /* Color de texto café oscuro para legibilidad */
-}
-
-/* Efecto al pasar el mouse por encima (antes de hacer clic) */
-.form-control:hover {
-    border-color: rgba(212, 163, 115, 0.7);
-    background: #fff;
-}
-
-/* Efecto al hacer clic (Focus) */
-.form-control:focus {
-    background: #fff;
-    
-    /* Borde café sólido más fuerte */
-    border-color: #6f4e37; 
-    
-    /* Sombra (glow) café para dar profundidad */
-    box-shadow: 0 0 8px rgba(111, 78, 55, 0.2); 
-    
-    transform: translateY(-2px);
-    outline: none; /* Quita el borde azul feo por defecto de Chrome */
-}
-
-/* Estilo para el placeholder (el texto de fondo) */
-.form-control::placeholder {
-    color: rgba(111, 78, 55, 0.5);
-    font-size: 0.9rem;
-}   
-
-/* BOTÓN PROFESIONAL */
-.btnEnviar {
-    background: #6f4e37;
-    color: white;
-    font-weight: 600;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 45px !important;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 8px 20px rgba(111, 78, 55, 0.3);
-}
-
-.btnEnviar:hover {
-    background: #532721;
-    transform: scale(1.08) translateY(-3px);
-    box-shadow: 0 12px 25px rgba(111, 78, 55, 0.5);
-    color: white;
-}
-
-/* FIX PARA EL FONDO EN VUE */
+/* FONDO */
 :deep(body)::before {
     content: "";
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: url('/assets/img/background1.jpg') center/cover;
-    opacity: 0.15;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/assets/img/background1.jpg') center/cover;
+    background-attachment: fixed;
+    opacity: 1;
     z-index: -1;
 }
 
-/* Errores */
-.invalid-feedback {
-    font-weight: 500;
-    margin-left: 5px;
-    animation: shake 0.3s ease;
+:deep(body) {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+/* CENTRADO VERTICAL */
+main.container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shadow-lg {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Estilos del formulario inyectado */
+.contact-form-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.header-contact {
+    text-align: center;
+}
+
+/* Badge decorativo superior */
+.coffee-badge {
+    background-color: rgba(83, 39, 33, 0.1);
+    color: var(--color-primary);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Inputs Premium */
+.form-label {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+}
+
+.form-control {
+    background-color: #fdfcfb;
+    border: 1.5px solid #e6dfd9;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #4a3b32;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-control:hover {
+    border-color: var(--color-secondary);
+    background-color: #ffffff;
+}
+
+.form-control:focus {
+    background-color: #ffffff;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 4px rgba(83, 39, 33, 0.15);
+    outline: 0;
+}
+
+.form-control::placeholder {
+    color: #a69a91;
+    font-size: 0.9rem;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Botón de envío rediseñado */
+.btnEnviar {
+    background: var(--color-primary);
+    color: white !important;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border: 2px solid transparent;
+    border-radius: 50px;
+    padding: 14px 35px;
+    box-shadow: 0 6px 18px rgba(83, 39, 33, 0.25);
+    transition: all 0.3s ease;
+}
+
+.btnEnviar:hover {
+    background: var(--color-primary);
+    color: #fdfcfb !important;
+    border-color: var(--color-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(83, 39, 33, 0.35);
+}
+
+.btnEnviar:active {
+    transform: translateY(-1px);
+}
+
+/* Validaciones de Error Estilizadas */
+.invalid-feedback {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #dc3545;
+    margin-top: 5px;
+    padding-left: 4px;
+    animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* SweetAlert Custom Styles */
+:deep(.swal-coffee-popup) {
+    border-radius: 20px;
+}
+
+:deep(.swal-coffee-title) {
+    color: var(--color-primary);
+    font-family: 'Playfair Display', serif;
+}
+
+:deep(.swal-coffee-button) {
+    border-radius: 50px;
+    padding: 12px 30px;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    main.container {
+        padding: 20px;
+        padding-top: 140px !important;
+    }
+    
+    .col-md-5 {
+        padding: 40px 25px !important;
+    }
+    
+    .btnEnviar {
+        width: 100% !important;
+    }
 }
 </style>

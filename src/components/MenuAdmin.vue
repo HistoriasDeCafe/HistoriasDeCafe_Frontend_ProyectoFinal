@@ -2,7 +2,7 @@
   <aside class="sidebar">
     <div class="logo-section">
       <span>Módulo Administrativo</span>
-      <img src="/assets/img/logo.png" alt="Admin">
+      <img src="/assets/img/logo-dark.svg" alt="Admin">
     </div>
     <nav>
       <ul>
@@ -15,14 +15,26 @@
           <i :class="item.icon"></i>
           <span>{{ item.view }}</span>
         </li>
+        <li @click="goToCatalog">
+          <i class="bi bi-box-seam"></i>
+          <span>Catálogo</span>
+        </li>
+        <li @click="logout">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Salir</span>
+        </li>
       </ul>
     </nav>
   </aside>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
 defineProps(['modelValue']);
 defineEmits(['update:modelValue']);
+
+const router = useRouter();
 
 const menuItems = [
   { view: 'Dashboard', icon: 'bi bi-speedometer2' },
@@ -31,25 +43,141 @@ const menuItems = [
   { view: 'Usuarios', icon: 'bi bi-people' },
   { view: 'Configuración', icon: 'bi bi-gear' }
 ];
+
+const goToCatalog = () => {
+  router.push('/catalogo');
+};
+
+const logout = () => {
+  localStorage.removeItem('usuarioActivo');
+  localStorage.removeItem('authToken');
+  router.push('/auth');
+};
 </script>
 
 <style scoped>
 .sidebar {
-  width: 160px;
-  background-color: #532721; /* var(--color-primary) */
-  border-right: 2px solid #B08D57; /* var(--color-secondary) */
+  width: 260px;
+  background: linear-gradient(180deg, var(--color-primary, #532721) 0%, #3d1c18 100%);
+  border-right: 3px solid var(--color-secondary, #B08D57);
   min-height: 100vh;
+  padding: 25px 20px;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
 }
+
 .logo-section {
-  display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem; border-bottom: 1px solid rgba(228, 219, 191, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  gap: 1rem;
+  border-bottom: 2px solid var(--color-secondary-muted, rgba(176, 141, 87, 0.3));
+  margin-bottom: 1.5rem;
+  background: rgba(176, 141, 87, 0.05);
+  border-radius: 12px;
 }
-.logo-section img { width: 90px; order: 2; }
-.logo-section span { order: 1; color: #E4DBBF; font-weight: 600; font-size: 0.95rem; }
-ul { list-style: none; padding: 0; }
-li {
-  display: flex; align-items: center; gap: 0.75rem; padding: 12px 15px; cursor: pointer;
-  color: #E4DBBF; transition: all 0.2s;
+
+.logo-section img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  order: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
-li:hover { background: #3d1c18; }
-li.active { background: #B08D57; color: #532721; font-weight: 600; }
+
+.logo-section span {
+  order: 2;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-background, #E4DBBF);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  color: var(--color-background, #E4DBBF);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+}
+
+nav ul li:hover {
+  background: rgba(176, 141, 87, 0.15);
+  border-color: var(--color-secondary, #B08D57);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(176, 141, 87, 0.2);
+}
+
+nav ul li.active {
+  background: linear-gradient(135deg, var(--color-secondary, #B08D57) 0%, #8f7145 100%);
+  color: var(--color-primary, #532721);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(176, 141, 87, 0.4);
+  border-color: var(--color-secondary, #B08D57);
+  transform: translateX(4px);
+}
+
+nav ul li i {
+  font-size: 1.25rem;
+  width: 28px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+nav ul li:hover i {
+  transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 80px;
+    padding: 20px 12px;
+  }
+  
+  .logo-section {
+    padding: 1.5rem 0.5rem;
+    border-radius: 8px;
+  }
+  
+  .logo-section img {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .logo-section span {
+    display: none;
+  }
+  
+  nav ul li span {
+    display: none;
+  }
+  
+  nav ul li {
+    justify-content: center;
+    padding: 14px 10px;
+    gap: 0;
+  }
+  
+  nav ul li i {
+    font-size: 1.4rem;
+    width: auto;
+  }
+}
 </style>

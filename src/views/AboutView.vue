@@ -1,89 +1,85 @@
 <template>
-  <!-- HEADER CON CARRUSEL -->
-  <header class="container mt-5">
-    <div id="carouselExampleCaptions" class="carousel slide carousel-fade custom-carousel" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"></button>
-      </div>
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Nuestra Historia</h1>
+      <p class="hero-subtitle">Conectando familias caficultoras directamente con tu taza</p>
+    </div>
+  </section>
 
-      <div class="carousel-inner rounded-4 shadow-lg">
-        <div class="carousel-item active">
-          <img src="/assets/img/despulpado.png" class="d-block w-100" alt="Despulpado">
-          <div class="carousel-caption">
-            <h5 class="fw-bold">Justicia Económica</h5>
-            <p>Trabajamos para maximizar los ingresos directos de los productores, garantizando precios honestos.</p>
-          </div>
+  <!-- VALORES SECTION -->
+  <section class="values-section">
+    <div class="container">
+      <h2 class="section-title">Nuestros Valores</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">💰</div>
+          <h3>Justicia Económica</h3>
+          <p>Maximizamos los ingresos directos de los productores, garantizando precios honestos y justos.</p>
         </div>
-        <div class="carousel-item">
-          <img src="/assets/img/manos&cafe.png" class="d-block w-100" alt="Manos y Café">
-          <div class="carousel-caption">
-            <h5 class="fw-bold">Sostenibilidad Cultural</h5>
-            <p>Nos apasiona preservar la herencia cafetera, honrando el trabajo manual y artesanal.</p>
-          </div>
+        <div class="value-card">
+          <div class="value-icon">🌱</div>
+          <h3>Sostenibilidad Cultural</h3>
+          <p>Preservamos la herencia cafetera, honrando el trabajo manual y artesanal de las familias.</p>
         </div>
-        <div class="carousel-item">
-          <img src="/assets/img/herencia&cultivo.png" class="d-block w-100" alt="Herencia">
-          <div class="carousel-caption">
-            <h5 class="fw-bold">Trazabilidad y Transparencia</h5>
-            <p>Ofrecemos una conexión real desde la familia, la finca hasta la taza.</p>
-          </div>
+        <div class="value-card">
+          <div class="value-icon">🔍</div>
+          <h3>Trazabilidad Total</h3>
+          <p>Conexión real y transparente desde la familia, la finca hasta la taza de café.</p>
         </div>
       </div>
-
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
     </div>
-  </header>
+  </section>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="container my-5">
-    <div class="row text-center mb-5">
-      <div class="col-md-6 px-4 py-4">
-        <h3 class="titulo-cafe">Nuestra Razón de Ser</h3>
-        <p class="text-muted">Dignificamos la labor de las familias caficultoras eliminando intermediarios.</p>
-      </div>
-      <div class="col-md-6 px-4 py-4">
-        <h3 class="titulo-cafe">Trazabilidad del Cultivo a la Taza</h3>
-        <p class="text-muted">Garantizamos transparencia total en cada grano desde la cosecha hasta el tostado.</p>
+  <!-- MISION SECTION -->
+  <section class="mission-section">
+    <div class="container">
+      <div class="mission-grid">
+        <div class="mission-card">
+          <h3>Nuestra Razón de Ser</h3>
+          <p>Dignificamos la labor de las familias caficultoras eliminando intermediarios y garantizando que cada grano cuente.</p>
+        </div>
+        <div class="mission-card">
+          <h3>Trazabilidad del Cultivo a la Taza</h3>
+          <p>Garantizamos transparencia total en cada grano desde la cosecha hasta el tostado, conectando origen y destino.</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="row mb-5 justify-content-center">
-      <div class="col-md-10 impacto-box text-center">
-        <h2 class="titulo-cafe">Nuestro Impacto</h2>
-        <p class="lead">Construimos un ecosistema de equidad y reconocimiento para el campo colombiano.</p>
+  <!-- IMPACT SECTION -->
+  <section class="impact-section">
+    <div class="container">
+      <div class="impact-content">
+        <h2 class="impact-title">Nuestro Impacto</h2>
+        <p class="impact-text">Construimos un ecosistema de equidad y reconocimiento para el campo colombiano, transformando vidas a través del comercio justo.</p>
       </div>
     </div>
+  </section>
 
-    <h3 class="text-center mb-5 equipo-title">Nuestro equipo</h3>
-    
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center">
-      <div v-for="(persona, index) in equipo" :key="index" class="col">
-        <div class="card h-100 border-0 card-hover">
-          <!-- CONTENEDOR DE IMAGEN TIPO RETRATO -->
-          <div class="img-wrapper mt-3">
-             <img :src="persona.foto" class="card-img-profile" :alt="persona.nombre">
+  <!-- TEAM SECTION -->
+  <section class="team-section">
+    <div class="container">
+      <h2 class="section-title">Nuestro Equipo</h2>
+      <p class="section-subtitle">Los apasionados detrás de cada taza de café</p>
+      
+      <div class="team-grid">
+        <div v-for="(persona, index) in equipo" :key="index" class="team-card">
+          <div class="team-avatar">
+            <img :src="persona.foto" :alt="persona.nombre">
           </div>
-          
-          <div class="card-body d-flex flex-column text-center pt-3">
-            <h5 class="card-title fw-bold m-0">{{ persona.nombre }}</h5>
-            <small class="text-secondary mb-3">{{ persona.rol }}</small>
-            <p class="card-text small text-muted flex-grow-1">{{ persona.descripcion }}</p>
-            
-            <div class="d-flex justify-content-center gap-3 mt-3 pt-3 border-top">
-              <a :href="persona.linkedin" target="_blank" class="social-icon" title="LinkedIn">
+          <div class="team-info">
+            <h3 class="team-name">{{ persona.nombre }}</h3>
+            <p class="team-role">{{ persona.rol }}</p>
+            <p class="team-description">{{ persona.descripcion }}</p>
+            <div class="team-social">
+              <a :href="persona.linkedin" target="_blank" class="social-link" title="LinkedIn">
                 <i class="fa-brands fa-linkedin"></i>
               </a>
-              <a :href="persona.github" target="_blank" class="social-icon" title="GitHub">
+              <a :href="persona.github" target="_blank" class="social-link" title="GitHub">
                 <i class="fa-brands fa-github"></i>
               </a>
-              <a :href="persona.portfolio" target="_blank" class="social-icon" title="Portafolio">
+              <a :href="persona.portfolio" target="_blank" class="social-link" title="Portafolio">
                 <i class="fa-solid fa-briefcase"></i>
               </a>
             </div>
@@ -91,7 +87,7 @@
         </div>
       </div>
     </div>
-  </main>
+  </section>
 </template>
 
 <script setup>
@@ -117,15 +113,6 @@ const equipo = ref([
     portfolio: "https://myportfolio-andres-diaz-figueroa.vercel.app/"
   },
   {
-    nombre: "Marcia Baquero Ruiz",
-    rol: "Junior Java Full Stack",
-    descripcion: "Apasionada por el Frontend, Clean Code y aplicaciones escalables.",
-    foto: "/assets/img/fotoMarcia.png",
-    linkedin: "https://www.linkedin.com/in/marcia-baquero-dev-full-stack",
-    github: "https://github.com/Maka322",
-    portfolio: "#"
-  },
-  {
     nombre: "Didier Cuan Najas",
     rol: "Full Stack Developer",
     descripcion: "Analista y desarrollador apasionado por tecnología backend y frontend.",
@@ -147,78 +134,332 @@ const equipo = ref([
 </script>
 
 <style scoped>
-.titulo-cafe { color: #6f4e37; font-weight: 600; }
-
-/* --- CARD PROFESIONAL --- */
-.card-hover {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border-radius: 25px;
-    padding: 10px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(176, 141, 87, 0.15);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+:root {
+  --color-primary: #532721;
+  --color-primary-active: #3d1c18;
+  --color-secondary: #B08D57;
+  --color-secondary-muted: rgba(176, 141, 87, 0.6);
+  --color-accent: #5F6335;
+  --color-background: #E4DBBF;
+  --color-text-default: #1A1A1A;
+  --color-border-default: #B08D57;
 }
 
-.card-hover:hover { 
-    transform: translateY(-12px); 
-    box-shadow: 0 20px 30px rgba(111, 78, 55, 0.15);
-    background: #ffffff;
+/* --- HERO SECTION --- */
+.hero-section {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+  padding: 180px 40px 100px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-top: 0;
 }
 
-/* --- CONTENEDOR DE IMAGEN (EL "MARCO") --- */
-.img-wrapper {
-    width: 140px; /* Tamaño fijo circular para uniformidad */
-    height: 140px;
-    margin: 0 auto;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid #fff;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    background: linear-gradient(135deg, #d4a373 0%, #6f4e37 100%);
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/assets/img/background1.jpg') center/cover;
+  opacity: 0.15;
+  z-index: 0;
 }
 
-.card-img-profile { 
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    /* PRIORIDAD: Enfocar la parte superior para no cortar cabezas */
-    object-position: center 15%; 
-    transition: transform 0.6s ease;
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.card-hover:hover .card-img-profile {
-    transform: scale(1.15);
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
 }
 
-/* --- ICONOS DE REDES SOCIALES --- */
-.social-icon {
-    width: 38px;
-    height: 38px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid rgba(212, 163, 115, 0.5);
-    border-radius: 50%;
-    color: #6f4e37 !important; 
+.hero-subtitle {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* --- VALUES SECTION --- */
+.values-section {
+  padding: 80px 40px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-background) 100%);
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text-default);
+  text-align: center;
+  margin-bottom: 50px;
+  opacity: 0.8;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.value-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(83, 39, 33, 0.1);
+  border: 2px solid rgba(176, 141, 87, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.value-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(83, 39, 33, 0.2);
+  border-color: var(--color-secondary);
+}
+
+.value-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.value-card h3 {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.value-card p {
+  font-size: 1rem;
+  color: var(--color-text-default);
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* --- MISSION SECTION --- */
+.mission-section {
+  padding: 80px 40px;
+  background: white;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mission-card {
+  background: linear-gradient(135deg, rgba(176, 141, 87, 0.08) 0%, rgba(176, 141, 87, 0.02) 100%);
+  border-radius: 16px;
+  padding: 40px;
+  border-left: 4px solid var(--color-secondary);
+  transition: all 0.3s ease;
+}
+
+.mission-card:hover {
+  background: linear-gradient(135deg, rgba(176, 141, 87, 0.12) 0%, rgba(176, 141, 87, 0.05) 100%);
+  transform: translateX(8px);
+}
+
+.mission-card h3 {
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.mission-card p {
+  font-size: 1.1rem;
+  color: var(--color-text-default);
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+/* --- IMPACT SECTION --- */
+.impact-section {
+  padding: 100px 40px;
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+  text-align: center;
+}
+
+.impact-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.impact-title {
+  font-size: 2.8rem;
+  color: white;
+  margin-bottom: 25px;
+  font-weight: 800;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.impact-text {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+/* --- TEAM SECTION --- */
+.team-section {
+  padding: 100px 40px;
+  background: linear-gradient(180deg, var(--color-background) 0%, #ffffff 100%);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.team-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(83, 39, 33, 0.1);
+  border: 2px solid rgba(176, 141, 87, 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(83, 39, 33, 0.2);
+  border-color: var(--color-secondary);
+}
+
+.team-avatar {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--color-secondary);
+  box-shadow: 0 8px 20px rgba(176, 141, 87, 0.3);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-primary) 100%);
+}
+
+.team-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  transition: transform 0.4s ease;
+}
+
+.team-card:hover .team-avatar img {
+  transform: scale(1.1);
+}
+
+.team-name {
+  font-size: 1.3rem;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.team-role {
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.team-description {
+  font-size: 0.95rem;
+  color: var(--color-text-default);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+.team-social {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-link {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-secondary);
+  border-radius: 50%;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.social-link:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 6px 16px rgba(83, 39, 33, 0.3);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
     font-size: 1.1rem;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.social-icon i { color: inherit; }
-
-.social-icon:hover {
-    background-color: #6f4e37;
-    border-color: #6f4e37;
-    color: white !important;
-    transform: scale(1.2);
-}
-
-/* Fondo de página sutil */
-:deep(body)::before {
-    content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: url('/assets/img/background1.jpg') center/cover;
-    opacity: 0.1; z-index: -1;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .values-grid,
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .impact-title {
+    font-size: 2rem;
+  }
+  
+  .impact-text {
+    font-size: 1.1rem;
+  }
 }
 </style>

@@ -1,0 +1,777 @@
+<template>
+  <div class="home-container">
+    <!-- SLIDER -->
+    <section class="slider-intergalactico">
+      <div class="hero-overlay"></div>
+      <div class="slider-inner">
+        <div class="hero-panel">
+          <div class="hero-content">
+            <span class="eyebrow">Sabores con historia</span>
+            <h1 class="hero-title">Una historia por cada taza de café</h1>
+            <p class="hero-copy">Explora el origen, aroma y tradición de nuestro café seleccionado para amantes de la experiencia auténtica.</p>
+            <div class="hero-actions">
+              <router-link to="/auth" class="hero-btn">Únete y sé parte de una historia</router-link>
+              <router-link to="/about" class="hero-link">Conoce más</router-link>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-panel">
+          <div class="container">
+            <ul class="slide-list">
+              <li class="item" :style="{ backgroundImage: `url('/assets/imgProductos/auroraFloral-removebg-preview.png')` }">
+                <div class="content">
+                  <h2 class="title">Aurora Floral<span class="descuento-badge">DESCUENTO</span></h2>
+                  <p class="description">Aurora floral un aroma matutino y complejo de una variedad de Geisha Lavado, un tueste muy ligero y una identidad delicada con notas florales y elegantes</p>
+                </div>
+              </li>
+              <li class="item" :style="{ backgroundImage: `url('/assets/imgProductos/brisaMarina-removebg-preview.png')` }">
+                <div class="content">
+                  <h2 class="title">Brisas Marina<span class="descuento-badge">DESCUENTO</span></h2>
+                  <p class="description">Nuestro café Brisas Marina de un cultivo costero una variedad Bourbon Azul junto a un tueste medio ligero y una identidad de café con carácter marítimo, evocando frescura y singularidad</p>
+                </div>
+              </li>
+              <li class="item" :style="{ backgroundImage: `url('/assets/imgProductos/auroraFloralRosada-removebg-preview.png')` }">
+                <div class="content">
+                  <h2 class="title">Aurora Floral Rosada<span class="descuento-badge">DESCUENTO</span></h2>
+                  <p class="description">Con un aroma intenso, variedad Geisha Ligero, un tueste medio y una identidad propuesta floral más robusta, con cuerpo y fuerza aromática</p>
+                </div>
+              </li>
+              <li class="item" :style="{ backgroundImage: `url('/assets/imgProductos/esenciaAncestral-removebg-preview.png')` }">
+                <div class="content">
+                  <h2 class="title">Esencia Ancestral<span class="descuento-badge">DESCUENTO</span></h2>
+                  <p class="description">De origen Tradición Maya de variedad Criollo Arábica con un proceso natural y una identidad de café con raíces culturales, resaltando herencia y autenticidad</p>
+                </div>
+              </li>
+              <li class="item" :style="{ backgroundImage: `url('/assets/imgProductos/montanaMistica-removebg-preview.png')` }">
+                <div class="content">
+                  <h2 class="title">Montaña Mística<span class="descuento-badge">DESCUENTO</span></h2>
+                  <p class="description">Café de origen es de Finca Las Nubes de variedad Pacamara Miel con Tueste Edición Limitada y una Identidad de café Premium, con empaque elegante y dorado</p>
+                </div>
+              </li>
+            </ul>
+            <nav class="nav-buttons" aria-label="Controles del carrusel">
+              <button type="button" class="prev" @click="prevSlide" aria-label="Anterior">❮</button>
+              <button type="button" class="next" @click="nextSlide" aria-label="Siguiente">❯</button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN VIDEOS PRODUCTOS -->
+    <section class="productos-videos container">
+      <div class="section-header">
+        <h2>Nuestros Productos</h2>
+        <p>Conoce nuestras fincas, procesos y el origen auténtico de nuestro café.</p>
+      </div>
+
+      <div class="videos-grid">
+        <!-- VIDEO 1 -->
+        <article class="video-card" :class="{ playing: playingVideo === 1 }">
+          <video 
+            class="product-video" 
+            muted 
+            loop 
+            playsinline 
+            preload="metadata"
+            poster="/assets/imgProductos/cosechaNocturna.png"
+            ref="video1"
+            @click="toggleVideo(1)">
+            <source src="/assets/mp4/extended-cinematic-product-animation-of-premium-co.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video.
+          </video>
+          <div class="video-overlay" v-if="playingVideo !== 1">
+            <button type="button" class="play-btn" @click="toggleVideo(1)" aria-label="Reproducir video">▶</button>
+          </div>
+          <router-link class="video-info" to="/catalogo">
+            <h3>Cosecha Nocturna</h3>
+            <p>Que no te haga falta un café nocturno</p>
+          </router-link>
+        </article>
+
+        <!-- VIDEO 2 -->
+        <article class="video-card" :class="{ playing: playingVideo === 2 }">
+          <video 
+            class="product-video" 
+            muted 
+            loop 
+            playsinline 
+            preload="metadata"
+            poster="/assets/imgProductos/solLevante.png"
+            ref="video2"
+            @click="toggleVideo(2)">
+            <source src="/assets/mp4/SolLevanteTaza.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video.
+          </video>
+          <div class="video-overlay" v-if="playingVideo !== 2">
+            <button type="button" class="play-btn" @click="toggleVideo(2)" aria-label="Reproducir video">▶</button>
+          </div>
+          <router-link class="video-info" to="/catalogo">
+            <h3>Sol Levante</h3>
+            <p>Una taza de café perfecta para tu mañana</p>
+          </router-link>
+        </article>
+
+        <!-- VIDEO 3 -->
+        <article class="video-card" :class="{ playing: playingVideo === 3 }">
+          <video 
+            class="product-video" 
+            muted 
+            loop 
+            playsinline 
+            preload="metadata"
+            poster="/assets/imgProductos/volcanFuego.png"
+            ref="video3"
+            @click="toggleVideo(3)">
+            <source src="/assets/mp4/VolcanFuegoTaza.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video.
+          </video>
+          <div class="video-overlay" v-if="playingVideo !== 3">
+            <button type="button" class="play-btn" @click="toggleVideo(3)" aria-label="Reproducir video">▶</button>
+          </div>
+          <router-link class="video-info" to="/catalogo">
+            <h3>Origen Colombiano</h3>
+            <p>Cultivado en las mejores montañas</p>
+          </router-link>
+        </article>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+
+const currentSlide = ref(0);
+const totalSlides = 5;
+const playingVideo = ref(null);
+const video1 = ref(null);
+const video2 = ref(null);
+const video3 = ref(null);
+
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % totalSlides;
+  updateSlider();
+};
+
+const prevSlide = () => {
+  currentSlide.value = (currentSlide.value - 1 + totalSlides) % totalSlides;
+  updateSlider();
+};
+
+const updateSlider = () => {
+  const items = document.querySelectorAll('.slide-list .item');
+  items.forEach((item, index) => {
+    item.style.opacity = '0';
+    item.style.transform = 'scale(0.96)';
+    item.style.filter = 'blur(2px) brightness(0.65)';
+    item.style.zIndex = '0';
+  });
+
+  const activeItem = items[currentSlide.value];
+  if (activeItem) {
+    activeItem.style.opacity = '1';
+    activeItem.style.transform = 'scale(1)';
+    activeItem.style.filter = 'none';
+    activeItem.style.zIndex = '1';
+  }
+};
+
+const toggleVideo = (videoNum) => {
+  const videoRef = videoNum === 1 ? video1 : videoNum === 2 ? video2 : video3;
+  
+  if (playingVideo.value === videoNum) {
+    videoRef.value.pause();
+    playingVideo.value = null;
+  } else {
+    // Pause all other videos
+    [video1, video2, video3].forEach(ref => {
+      if (ref.value) ref.value.pause();
+    });
+    
+    videoRef.value.play();
+    playingVideo.value = videoNum;
+  }
+};
+
+let slideInterval;
+
+onMounted(() => {
+  updateSlider();
+  slideInterval = setInterval(nextSlide, 5000);
+});
+
+onUnmounted(() => {
+  clearInterval(slideInterval);
+  [video1, video2, video3].forEach(ref => {
+    if (ref.value) ref.value.pause();
+  });
+});
+</script>
+
+<style scoped>
+/* ==================== GLOBAL ==================== */
+:root {
+  --color-primary: #532721;
+  --color-primary-active: #3d1c18;
+  --color-secondary: #B08D57;
+  --color-secondary-muted: rgba(176, 141, 87, 0.6);
+  --color-accent: #5F6335;
+  --color-background: #E4DBBF;
+  --color-text-default: #1A1A1A;
+  --color-border-default: #B08D57;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0d0705 0%, #1a0f0a 30%, #2d1812 60%, var(--color-primary) 100%);
+  color: #f8f6f5;
+}
+
+/* ==================== HERO SLIDER ==================== */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(176, 141, 87, 0.12) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%);
+  pointer-events: none;
+}
+
+.slider-intergalactico {
+  position: relative;
+  width: 100%;
+  min-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  padding-top: 80px;
+}
+
+.slider-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(300px, 43%) minmax(380px, 55%);
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1280px;
+  padding: 6rem 2rem 4rem;
+  align-items: center;
+  z-index: 1;
+}
+
+.hero-panel {
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  position: relative;
+  max-width: 520px;
+  z-index: 2;
+}
+
+.carousel-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  width: 100%;
+}
+
+.carousel-panel .container {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  padding: 0;
+}
+
+.eyebrow {
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(176, 141, 87, 0.8);
+  margin-bottom: 1.1em;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.hero-title {
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  line-height: 1.05;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.05em;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-copy {
+  max-width: 500px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.8rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero-btn,
+.hero-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 26px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.hero-btn {
+  background: var(--color-secondary);
+  color: #1a0905;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-btn:hover {
+  transform: translateY(-2px);
+  background: #c9a063;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.hero-link {
+  background: rgba(255,255,255,0.08);
+  color: #f8f6f5;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+}
+
+.hero-link:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* ==================== SLIDER ITEMS ==================== */
+.slide-list {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.slide-list .item {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: transform 0.8s cubic-bezier(.22,.61,.36,1), opacity 0.8s ease, filter 0.8s ease;
+  box-shadow: 0 24px 80px rgba(83, 39, 33, 0.5), inset 0 0 0 2px rgba(176, 141, 87, 0.2);
+}
+
+.slide-list .item:first-child {
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
+  z-index: 1;
+}
+
+.slide-list .item:not(:first-child) {
+  filter: blur(2px) brightness(0.65);
+}
+
+.slide-list .item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.4));
+  border-radius: 24px;
+}
+
+.content {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  right: 28px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: rgba(255,255,255,0.98);
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 20px 22px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.content .title {
+  font-size: 1.3rem;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.content .description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.84);
+  margin: 0;
+}
+
+.descuento-badge {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #4a5229 100%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin-left: 12px;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 8px rgba(95, 99, 53, 0.4);
+}
+
+.slide-list .item:nth-child(2) .content {
+  display: block;
+}
+
+/* Animaciones */
+.title {
+  animation: showcontent 1s ease-in-out 1 forwards;
+  padding: 7px;
+  font-family: sans-serif;
+}
+
+.description {
+  animation: showcontent 1s ease-in-out 0.3s 1 forwards;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: sans-serif;
+  color: #ffffff;
+  padding: 10px;
+}
+
+@keyframes showcontent {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+    filter: blur(33px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.nav-buttons {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.nav-buttons button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.nav-buttons button:hover {
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Floating animation */
+.slide-list .item:nth-child(2) {
+  animation: floating 4s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* ==================== VIDEOS SECTION ==================== */
+.productos-videos {
+  padding: 100px 0;
+  background: #f5f0e8;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  left: 0;
+  right: 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--color-primary);
+  margin-bottom: 10px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+}
+
+.section-header p {
+  color: var(--color-text-default);
+  font-size: 1rem;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.video-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf8f5 50%, #f5f0e8 100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.video-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+}
+
+.product-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  border-radius: 14px 14px 0 0;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0,0,0,0.6) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 14px 14px 0 0;
+}
+
+.video-card.playing .video-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.play-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.9);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(176, 141, 87, 0.8) 100%);
+  backdrop-filter: blur(12px);
+  color: #1a0905;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+}
+
+.play-btn:hover {
+  transform: scale(1.15);
+  background: linear-gradient(135deg, #ffd700 0%, var(--color-secondary) 100%);
+  box-shadow: 0 12px 32px rgba(255, 215, 0, 0.6);
+}
+
+.video-info {
+  display: block;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #faf8f5 100%);
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0 0 14px 14px;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.video-info:hover {
+  text-decoration: none;
+}
+
+.video-info h3 {
+  margin-bottom: 8px;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.video-info p {
+  color: var(--color-text-default);
+  font-size: 0.95rem;
+  margin: 0;
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 992px) {
+  .videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .slider-intergalactico {
+    min-height: auto;
+    padding-top: 100px;
+    padding-bottom: 40px;
+  }
+  
+  .slider-inner {
+    padding: 3rem 1.5rem 2rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3.4rem);
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .carousel-panel {
+    min-height: 400px;
+  }
+  
+  .slider-intergalactico {
+    padding-top: 120px;
+  }
+}
+
+@media (max-width: 600px) {
+  .video-card {
+    border-radius: 12px;
+  }
+
+  .hero-content {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    text-align: center;
+    padding: 30px 15px 20px;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-inner {
+    padding: 4rem 1rem 2rem;
+  }
+  
+  .slider-intergalactico {
+    padding-top: 140px;
+    min-height: auto;
+  }
+
+  .content {
+    left: 5%;
+    right: 5%;
+    max-width: 90%;
+    bottom: 20px;
+  }
+  
+  .carousel-panel {
+    min-height: 350px;
+  }
+}
+</style>

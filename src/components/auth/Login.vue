@@ -1,54 +1,57 @@
 <template>
   <div class="auth-component">
-    <div class="header-imagen">
-      <!-- GIF específico para Login -->
-      <img src="/assets/img/gifRegistrar.gif" alt="Login">
-    </div>
-
-    <div class="contenedor-formulario">
-      <div class="tabs">
-        <a class="tab active">Iniciar Sesión</a>
-        <a class="tab" @click="$emit('switch')">Registrarse</a>
+    <div class="card">
+      <!-- Imagen -->
+      <div class="header-imagen">
+        <img src="/assets/img/coffeecup.gif" alt="gifLogin">
       </div>
 
-      <form @submit.prevent="handleLogin">
-        <!-- Campo Email -->
-        <div class="campo-wrapper">
-          <div class="grupo-input" :class="{ 'is-invalid-border': errors.email }">
-            <i class="fa-regular fa-envelope"></i>
-            <input 
-              v-model="loginData.email" 
-              type="email" 
-              placeholder="Correo electrónico:" 
-            >
+      <!-- Formulario -->
+      <div class="contenedor-formulario">
+        <div class="tabs">
+          <a class="tab active">Iniciar Sesión</a>
+          <a class="tab" @click="$emit('switch')">Registrarse</a>
+        </div>
+
+        <form @submit.prevent="handleLogin">
+          <div class="campo-wrapper">
+            <div class="grupo-input" :class="{ 'is-invalid': errors.email }">
+              <i class="fa-regular fa-envelope"></i>
+              <input 
+                v-model="loginData.email" 
+                type="email" 
+                placeholder="Correo electrónico:"
+                :class="{ 'is-invalid': errors.email }"
+              >
+            </div>
+            <span v-if="errors.email" class="invalid-feedback">{{ errors.email }}</span>
           </div>
-          <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
-        </div>
 
-        <!-- Campo Password -->
-        <div class="campo-wrapper">
-          <div class="grupo-input" :class="{ 'is-invalid-border': errors.password }">
-            <i class="fa-solid fa-lock"></i>
-            <input 
-              v-model="loginData.password" 
-              :type="showPass ? 'text' : 'password'" 
-              placeholder="Contraseña:" 
-            >
-            <i 
-              :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" 
-              @click="showPass = !showPass"
-              class="toggle-pass"
-            ></i>
+          <div class="campo-wrapper">
+            <div class="grupo-input" :class="{ 'is-invalid': errors.password }">
+              <i class="fa-solid fa-lock"></i>
+              <input 
+                v-model="loginData.password" 
+                :type="showPass ? 'text' : 'password'" 
+                placeholder="Contraseña:"
+                :class="{ 'is-invalid': errors.password }"
+              >
+              <i 
+                :class="showPass ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" 
+                @click="showPass = !showPass"
+                class="toggle-pass"
+              ></i>
+            </div>
+            <span v-if="errors.password" class="invalid-feedback">{{ errors.password }}</span>
           </div>
-          <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
-        </div>
 
-        <div class="forgot-pass">
-          <a href="#">¿Olvidaste tu contraseña?</a>
-        </div>
+          <div class="olvido-pass">
+            <a href="#">¿Olvidaste tu contraseña?</a>
+          </div>
 
-        <button type="submit" class="btn-login">Ingresar</button>
-      </form>
+          <button type="submit" class="btn-registrarse">Entrar</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -56,9 +59,12 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import Swal from 'sweetalert2';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits(['switch']);
+const router = useRouter();
 const showPass = ref(false);
+const isLoading = ref(false);
 
 const loginData = reactive({
   email: '',
@@ -70,89 +76,161 @@ const errors = reactive({
   password: ''
 });
 
-const handleLogin = () => {
+const validarEmail = () => {
+  const valor = loginData.email.trim();
+  const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (valor === '') {
+    errors.email = 'El correo es obligatorio';
+    return false;
+  }
+  if (!formatoEmail.test(valor)) {
+    errors.email = 'Formato inválido, ej: correo@dominio.com';
+    return false;
+  }
+
+  errors.email = '';
+  return true;
+};
+
+const validarPassword = () => {
+  const valor = loginData.password;
+
+  if (valor === '') {
+    errors.password = 'La contraseña es obligatoria';
+    return false;
+  }
+
+  errors.password = '';
+  return true;
+};
+
+const handleLogin = async () => {
   // Limpiar errores previos
   errors.email = '';
   errors.password = '';
 
-  // Validaciones básicas de estilo
-  if (!loginData.email.includes('@')) {
-    errors.email = "Ingresa un correo válido";
-    return;
-  }
-  if (loginData.password.length < 1) {
-    errors.password = "La contraseña es obligatoria";
-    return;
-  }
+  const emailOk = validarEmail();
+  const passOk = validarPassword();
 
-  // Lógica de autenticación con LocalStorage
-  const users = JSON.parse(localStorage.getItem('usuariosCafe') || '[]');
-  const userFound = users.find(u => u.email === loginData.email && u.password === loginData.password);
+  if (!emailOk || !passOk) return;
 
-  if (userFound) {
-    localStorage.setItem('userSession', JSON.stringify({
-      name: userFound.fullName,
-      email: userFound.email,
-      isLoggedIn: true
-    }));
+  // API: POST /auth/login
+  const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080'
+    : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
 
-    Swal.fire({
-      title: `¡Bienvenido, ${userFound.fullName}!`,
-      icon: 'success',
-      timer: 1500,
-      showConfirmButton: false
+  const loginPayload = {
+    email: loginData.email.trim(),
+    password: loginData.password
+  };
+
+  isLoading.value = true;
+
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginPayload)
     });
 
-    setTimeout(() => {
-      window.location.href = "/"; 
-    }, 1600);
-  } else {
-    Swal.fire('Error', 'Credenciales incorrectas', 'error');
+    if (response.status === 401 || response.status === 403) {
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#8B5E3C',
+        title: '¡Correo o contraseña incorrectos!',
+        confirmButtonColor: '#8B5E3C'
+      });
+      return;
+    }
+
+    if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
+
+    // AuthResponseDTO: { token, user: { id, name, email, role } }
+    const data = await response.json();
+    const usuario = data.user;
+    const token = data.token;
+
+    // Guardamos sesión en localStorage
+    localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+    localStorage.setItem('authToken', token);
+
+    // Redirigir según rol
+    if (usuario.role && usuario.role.toUpperCase() === 'ADMIN') {
+      Swal.fire({
+        icon: 'success',
+        iconColor: '#8B5E3C',
+        title: '¡OK! Ingresando al módulo de administración!',
+        confirmButtonColor: '#8B5E3C',
+        timer: 3400,
+        showConfirmButton: false
+      }).then(() => {
+        router.push('/admin');
+      });
+    } else {
+      Swal.fire({
+        icon: 'success',
+        iconColor: '#8B5E3C',
+        title: `¡Bienvenid@ ${usuario.name}!`,
+        confirmButtonColor: '#8B5E3C',
+        timer: 3400,
+        showConfirmButton: false
+      }).then(() => {
+        router.push('/catalogo');
+      });
+    }
+
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al conectar con el servidor',
+      text: 'No se pudo iniciar sesión. Inténtalo de nuevo.',
+      confirmButtonColor: '#8B5E3C'
+    });
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
 
 <style scoped>
-/* Reutilizamos exactamente tu bloque de estilos de Register */
-.is-invalid-border { border: 1px solid #ff5252 !important; }
-.error-text { color: #ff5252; font-size: 11px; margin-top: 5px; display: block; text-align: left; }
-
 .auth-component {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+}
+
+.card {
+    width: 100%;
+    background: var(--color-primary);
+    border: none;
+    overflow: hidden;
 }
 
 .header-imagen {
     width: 100%;
-    height: 180px;
-    background-color: #ffffff;
+    height: 200px;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    border-bottom-left-radius: 80px;
+    background: #fff;
 }
 
 .header-imagen img {
-    width: 100%;       
-    height: 100%;     
-    object-fit: cover; 
-    object-position: center; 
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
 }
 
 .contenedor-formulario {
-    padding: 30px;
-    flex-grow: 1;
+    padding: 35px 40px;
 }
 
 .tabs {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 25px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 10px;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
 }
 
 .tab {
@@ -160,57 +238,129 @@ const handleLogin = () => {
     font-weight: 600;
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
-    transition: all 0.3s;
     text-decoration: none;
+    transition: all 0.3s ease;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .tab.active {
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    color: #ffffff;
+    border-bottom: 2px solid var(--cafe-acento, #A0785C);
 }
 
 .campo-wrapper {
-    margin-bottom: 18px;
+    margin-bottom: 25px;
+    position: relative;
 }
 
 .grupo-input {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 12px 15px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.grupo-input:focus-within {
+    border-bottom-color: var(--cafe-acento, #A0785C);
+}
+
+.grupo-input i {
+    margin-right: 15px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
 }
 
 .grupo-input input {
-    background: transparent;
+    background: none;
     border: none;
+    outline: none;
     color: #fff;
     width: 100%;
-    outline: none;
+    font-size: 1rem;
+    padding: 2px 0;
 }
 
-.btn-login {
+.grupo-input input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.grupo-input:has(.is-invalid) {
+    border-bottom-color: #ff6b6b !important;
+}
+
+.toggle-pass {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.2s;
+}
+
+.toggle-pass:hover {
+    color: #fff;
+}
+
+.olvido-pass {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
+
+.olvido-pass a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.olvido-pass a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding-left: 35px;
+    margin-top: 6px;
+    position: absolute;
+    animation: fadeInError 0.3s ease-out forwards;
+}
+
+@keyframes fadeInError {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-registrarse {
+    display: block;
     width: 100%;
     padding: 14px;
-    border-radius: 12px;
-    border: none;
-    background: #f3e5f5;
-    color: #3E2723;
-    font-weight: 700;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    background-color: var(--cafe-acento, #A0785C);
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    text-transform: uppercase;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    margin-top: 30px;
 }
 
-.forgot-pass {
-    text-align: right;
-    margin-bottom: 15px;
-}
-
-.forgot-pass a {
-    color: #D7CCC8;
-    font-size: 0.8rem;
-    text-decoration: none;
+.btn-registrarse:hover {
+    background-color: #A0785C;
+    border-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 </style>

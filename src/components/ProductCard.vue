@@ -8,10 +8,11 @@
       <p class="finca">{{ producto.origen || producto.finca }}</p>
       <div class="stars">★★★★★</div>
       <p class="description">{{ producto.descripcion }}</p>
-      <p class="price">${{ Number(producto.precio).toLocaleString() }}</p>
-      <div class="card-buttons">
-        <button class="btn-cart" @click="$emit('add-to-cart', producto)">AÑADIR AL CARRITO</button>
-        <button class="btn-detail">👁️ MOSTRAR DETALLE</button>
+      <div class="card-footer">
+        <p class="price">${{ Number(producto.precio).toLocaleString() }}</p>
+        <button class="btn-cart" @click="$emit('add-to-cart', producto)">
+          <i class="fa-solid fa-cart-plus"></i>
+        </button>
       </div>
     </div>
   </article>
@@ -23,32 +24,146 @@ defineEmits(['add-to-cart']);
 
 // Fallback por si la ruta de la imagen no existe
 const handleImageError = (e) => {
-  e.target.src = 'https://placehold.co';
+  e.target.src = '/assets/img/iconoPepitaCafe-dark.svg';
 };
 </script>
 
 <style scoped>
-/* Aquí va el CSS de la .card que pasaste al principio */
-.card {
-    border: 1px solid #e0e0e0; 
-    border-radius: 12px;
-    background-color: #fff;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+:root {
+  --color-primary: #532721;
+  --color-primary-active: #3d1c18;
+  --color-secondary: #B08D57;
+  --color-secondary-muted: rgba(176, 141, 87, 0.6);
+  --color-accent: #5F6335;
+  --color-background: #E4DBBF;
+  --color-text-default: #1A1A1A;
+  --color-border-default: #B08D57;
 }
-.card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-.image-placeholder { width: 100%; height: 220px; background-color: #f8f5f2; display: flex; justify-content: center; align-items: center; padding: 15px; }
-.card img { max-width: 100%; height: 100%; object-fit: contain; }
-.card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-.card-content h3 { font-size: 18.4px; margin: 0 0 5px 0; color: #2c1a0f; font-weight: 700; }
-.finca { font-size: 0.85rem; color: #6d4c41; margin-bottom: 8px; font-weight: 600; }
-.stars { color: #f1c40f; font-size: 0.8rem; margin-bottom: 10px; }
-.description { font-size: 13.6px; color: #555; line-height: 1.4; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.price { font-weight: 800; font-size: 1.25rem; color: #1a1a1a; padding-bottom: 15px; }
-.card-buttons { display: flex; flex-direction: column; gap: 8px; }
-.btn-cart { background-color: #3e2723; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; text-transform: uppercase; }
-.btn-detail { background-color: #f0f0f0; color: #333; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+
+.card {
+  border: 1px solid rgba(83, 39, 33, 0.15);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f0eb 100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(83, 39, 33, 0.12);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(83, 39, 33, 0.2);
+  border-color: var(--color-primary);
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #e8ddd0 0%, #d4c4b0 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.card img {
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.card:hover img {
+  transform: scale(1.05);
+}
+
+.card-content {
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content h3 {
+  font-size: 1rem;
+  margin: 0 0 4px 0;
+  color: var(--color-primary);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+.finca {
+  font-size: 0.75rem;
+  color: var(--color-secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.stars {
+  color: #f1c40f;
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.description {
+  font-size: 0.8rem;
+  color: var(--color-text-default);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.85;
+}
+
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(176, 141, 87, 0.15);
+}
+
+.price {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.btn-cart {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%);
+  color: white;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(83, 39, 33, 0.3);
+}
+
+.btn-cart:hover {
+  background: linear-gradient(135deg, var(--color-primary-active) 0%, var(--color-primary) 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(83, 39, 33, 0.4);
+}
+
+.btn-cart:active {
+  transform: scale(0.95);
+}
 </style>
