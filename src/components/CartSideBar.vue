@@ -16,7 +16,6 @@
 
       <div class="carrito-tabla-header">
         <span>Producto</span>
-        <span>Precio</span>
         <span>Cantidad</span>
         <span>Total</span>
       </div>
@@ -42,19 +41,15 @@
               <img :src="item.imagen" :alt="item.nombre">
             </div>
             <div class="prod-detalles">
-              <p>{{ item.nombre }}</p>
+              <p class="prod-nombre">{{ item.nombre }}</p>
               <button class="btn-eliminar" @click="eliminarItem(item.nombre)" title="Eliminar producto">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-              <span>Eliminar</span>
-            </button>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Eliminar</span>
+              </button>
             </div>
-          </div>
-
-          <div class="prod-precio">
-            ${{ Number(item.precio).toLocaleString('es-CO') }}
           </div>
 
           <div class="prod-cantidad">
@@ -75,7 +70,7 @@
         <p class="conteo-productos">{{ totalItems }} productos</p>
         <div class="notas-pedido">
           <label>Agregar notas al pedido</label>
-          <textarea v-model="notas" rows="2"></textarea>
+          <textarea v-model="notas" rows="2" placeholder="Especifica instrucciones especiales (ej. agregar como regalo, notas de entrega, etc.)"></textarea>
         </div>
         <hr>
         <div class="subtotal-section">
@@ -117,13 +112,22 @@ const updateQty = (nombre, cambio) => {
 };
 
 const eliminarItem = (nombre) => {
+  emit('close');
   Swal.fire({
     title: "¿Eliminar producto?",
-    text: `¿Deseas quitar ${nombre} del carrito?`,
+    html: `¿Deseas quitar <strong>${nombre}</strong> del carrito?`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Sí, eliminar",
-    confirmButtonColor: "#3e2723",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#dc3545",
+    cancelButtonColor: "#6c757d",
+    customClass: {
+      popup: 'swal2-popup-cart',
+      container: 'swal2-container-cart',
+      title: 'swal2-title-cart',
+      htmlContainer: 'swal2-html-container-cart'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       const filtrados = props.items.filter(i => i.nombre !== nombre);
@@ -133,6 +137,7 @@ const eliminarItem = (nombre) => {
 };
 
 const irAPagar = async () => {
+  // Validación: Carrito vacío
   if (props.items.length === 0) {
     return Swal.fire({
       icon: 'info',
@@ -146,35 +151,19 @@ const irAPagar = async () => {
   }
 
   try {
-    Swal.fire({
-      title: 'Preparando tu pedido...',
-      text: 'Estamos conectando con la pasarela de pago segura',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    // Cerrar carrito al inicio del proceso
+    emit('close');
 
-    const details = [];
-    props.items.forEach(item => {
-      details.push({
-        productId: Number(item.id || 1),
-        quantityProducts: Number(item.cantidad)
-      });
-    });
-
-    const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ? "http://localhost:8080"
-      : "https://e-commerce-historias-de-cafe-backend.onrender.com";
-
+    // Paso 1: Validar autenticación
     const token = localStorage.getItem("authToken");
     const usuarioActivo = localStorage.getItem("usuarioActivo");
-    
-    console.log('Token:', token ? 'Presente' : 'Ausente');
-    console.log('Usuario:', usuarioActivo ? JSON.parse(usuarioActivo) : 'Ausente');
+
+    console.log('[PAYMENT_FLOW] Iniciando proceso de pago');
+    console.log('[PAYMENT_FLOW] Token presente:', !!token);
+    console.log('[PAYMENT_FLOW] Usuario activo presente:', !!usuarioActivo);
 
     if (!token) {
-      Swal.close();
+      console.error('[PAYMENT_FLOW] Error: Token de autenticación ausente');
       return Swal.fire({
         icon: 'warning',
         iconColor: '#532721',
@@ -185,7 +174,7 @@ const irAPagar = async () => {
     }
 
     if (!usuarioActivo) {
-      Swal.close();
+      console.error('[PAYMENT_FLOW] Error: Información de usuario ausente');
       return Swal.fire({
         icon: 'warning',
         iconColor: '#532721',
@@ -196,8 +185,13 @@ const irAPagar = async () => {
     }
 
     const userData = JSON.parse(usuarioActivo);
-    if (!(userData.id || userData.idUser)) {
-      Swal.close();
+    const userId = userData.id || userData.idUser;
+
+    console.log('[PAYMENT_FLOW] Datos del usuario:', userData);
+    console.log('[PAYMENT_FLOW] Rol del usuario:', userData.role || userData.rol || 'No especificado');
+
+    if (!userId) {
+      console.error('[PAYMENT_FLOW] Error: ID de usuario no encontrado en userData', userData);
       return Swal.fire({
         icon: 'warning',
         iconColor: '#532721',
@@ -207,18 +201,57 @@ const irAPagar = async () => {
       });
     }
 
+    // Paso 2: Preparar detalles de la orden (OrderDetailRequestDto)
+    const details = props.items.map(item => {
+      const productId = Number(item.id || item.id_product || item.idProduct || 1);
+      console.log('[PAYMENT_FLOW] Item:', item.nombre, 'ID enviado:', productId, 'ID original:', item.id, 'id_product:', item.id_product, 'idProduct:', item.idProduct);
+      return {
+        productId: productId,
+        quantityProducts: Number(item.cantidad)
+      };
+    });
+
+    console.log('[PAYMENT_FLOW] Detalles de la orden:', details);
+
+    // Validar que todos los detalles tengan la estructura correcta
+    const invalidDetails = details.filter(d => 
+      !d.productId || !d.quantityProducts || d.quantityProducts <= 0
+    );
+
+    if (invalidDetails.length > 0) {
+      console.error('[PAYMENT_FLOW] Error: Detalles inválidos', invalidDetails);
+      throw new Error('Hay productos con información inválida en el carrito');
+    }
+
+    // Paso 3: Mostrar loading
+    Swal.fire({
+      title: 'Procesando tu pedido...',
+      text: 'Creando orden en el sistema',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Paso 4: Configurar API URL y headers
+    const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? "http://localhost:8080"
+      : "https://e-commerce-historias-de-cafe-backend.onrender.com";
+
     const authHeaders = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
     };
 
+    // Paso 5: Crear orden (OrderRequestDto: userId, stateOrder, details)
     const orderPayload = {
-      userId: userData.id || userData.idUser,
+      userId: userId,
       stateOrder: "En proceso",
       details: details
     };
 
-    console.log('Enviando orden:', orderPayload);
+    console.log('[PAYMENT_FLOW] Enviando OrderRequestDto:', orderPayload);
+    console.log('[PAYMENT_FLOW] Endpoint:', `${API_URL}/orders`);
 
     const orderResponse = await fetch(`${API_URL}/orders`, {
       method: "POST",
@@ -226,9 +259,11 @@ const irAPagar = async () => {
       body: JSON.stringify(orderPayload)
     });
 
-    console.log('Respuesta orden:', orderResponse.status);
+    console.log('[PAYMENT_FLOW] Respuesta orden - Status:', orderResponse.status);
 
+    // Manejar errores específicos de la orden
     if (orderResponse.status === 401) {
+      console.error('[PAYMENT_FLOW] Error 401: No autorizado');
       Swal.close();
       return Swal.fire({
         icon: 'error',
@@ -240,35 +275,64 @@ const irAPagar = async () => {
     }
 
     if (orderResponse.status === 403) {
+      console.error('[PAYMENT_FLOW] Error 403: Prohibido - Usuario sin permisos para crear órdenes');
+      console.error('[PAYMENT_FLOW] Usuario ID:', userId);
+      console.error('[PAYMENT_FLOW] Rol:', userData.role || userData.rol || 'No especificado');
       Swal.close();
       return Swal.fire({
         icon: 'error',
         iconColor: '#dc3545',
-        title: 'Sin permisos',
-        text: 'No tienes los permisos necesarios para crear órdenes. Verifica que tu cuenta tenga el rol correcto y los permisos adecuados en el backend.',
-        confirmButtonColor: '#532721'
+        title: 'Sin permisos para crear órdenes',
+        html: `Tu cuenta (ID: ${userId}) con rol <strong>${userData.role || userData.rol || 'No especificado'}</strong> no tiene permisos para crear órdenes de compra.<br><br>El rol <strong>CLIENT</strong> debería tener permisos para crear órdenes. Por favor, verifica la configuración de seguridad en el backend (SecurityConfig) para asegurar que el rol CLIENT tenga acceso al endpoint POST /orders.`,
+        confirmButtonColor: '#532721',
+        width: '550px'
       });
     }
 
     if (!orderResponse.ok) {
       const errorText = await orderResponse.text();
-      console.error('Error en /orders:', errorText);
-      throw new Error(`Error del servidor: ${orderResponse.status} - ${errorText}`);
+      console.error('[PAYMENT_FLOW] Error en creación de orden:', errorText);
+      throw new Error(`Error al crear la orden: ${orderResponse.status} - ${errorText}`);
     }
 
+    // Paso 6: Procesar respuesta de la orden (OrderResponseDto)
     const orderData = await orderResponse.json();
+    console.log('[PAYMENT_FLOW] OrderResponseDto recibido:', orderData);
+
     const nuevoOrderId = orderData.id;
-    console.log('Orden creada con ID:', nuevoOrderId);
+    
+    if (!nuevoOrderId) {
+      console.error('[PAYMENT_FLOW] Error: OrderResponseDto no contiene ID', orderData);
+      throw new Error('La respuesta del servidor no contiene un ID de orden válido');
+    }
+
+    console.log('[PAYMENT_FLOW] Orden creada exitosamente con ID:', nuevoOrderId);
+
+    // Paso 7: Actualizar loading para pago
+    Swal.update({
+      title: 'Configurando pago...',
+      text: 'Conectando con la pasarela de pago segura'
+    });
+
+    // Paso 8: Crear preferencia de pago (PaymentRequestDto: orderId)
+    const paymentPayload = {
+      orderId: nuevoOrderId
+    };
+
+    console.log('[PAYMENT_FLOW] Enviando PaymentRequestDto:', paymentPayload);
+    console.log('[PAYMENT_FLOW] Endpoint:', `${API_URL}/payments`);
 
     const paymentResponse = await fetch(`${API_URL}/payments`, {
       method: "POST",
       headers: authHeaders,
-      body: JSON.stringify({ orderId: nuevoOrderId })
+      body: JSON.stringify(paymentPayload)
     });
 
-    console.log('Respuesta pago:', paymentResponse.status);
+    console.log('[PAYMENT_FLOW] Respuesta pago - Status:', paymentResponse.status);
 
+    // Manejar errores específicos del pago
     if (paymentResponse.status === 401) {
+      console.error('[PAYMENT_FLOW] Error 401: No autorizado en pago');
       Swal.close();
       return Swal.fire({
         icon: 'error',
@@ -280,6 +344,7 @@ const irAPagar = async () => {
     }
 
     if (paymentResponse.status === 403) {
+      console.error('[PAYMENT_FLOW] Error 403: Prohibido en pago');
       Swal.close();
       return Swal.fire({
         icon: 'error',
@@ -292,22 +357,31 @@ const irAPagar = async () => {
 
     if (!paymentResponse.ok) {
       const errorText = await paymentResponse.text();
-      console.error('Error en /payments:', errorText);
-      throw new Error(`Error del servidor en pago: ${paymentResponse.status} - ${errorText}`);
+      console.error('[PAYMENT_FLOW] Error en creación de pago:', errorText);
+      throw new Error(`Error al crear la preferencia de pago: ${paymentResponse.status} - ${errorText}`);
     }
 
+    // Paso 9: Procesar respuesta del pago (PaymentResponseDto)
     const paymentData = await paymentResponse.json();
-    const linkDePago = paymentData.paymentUrl;
-    console.log('URL de pago:', linkDePago);
+    console.log('[PAYMENT_FLOW] PaymentResponseDto recibido:', paymentData);
 
-    if (linkDePago) {
-      window.location.href = linkDePago;
-    } else {
-      throw new Error("No se obtuvo paymentUrl de la respuesta.");
+    const paymentUrl = paymentData.paymentUrl;
+    
+    if (!paymentUrl) {
+      console.error('[PAYMENT_FLOW] Error: PaymentResponseDto no contiene paymentUrl', paymentData);
+      throw new Error('La respuesta del servidor no contiene una URL de pago válida');
     }
-  }
-  catch (error) {
-    console.error("Error:", error);
+
+    console.log('[PAYMENT_FLOW] URL de pago obtenida:', paymentUrl);
+    console.log('[PAYMENT_FLOW] Redirigiendo a pasarela de pago...');
+
+    // Paso 10: Cerrar carrito y redirigir a la pasarela de pago
+    Swal.close();
+    emit('close');
+    window.location.href = paymentUrl;
+
+  } catch (error) {
+    console.error('[PAYMENT_FLOW] Error no manejado:', error);
     Swal.fire({
       icon: 'error',
       iconColor: '#dc3545',
@@ -345,8 +419,8 @@ const irAPagar = async () => {
 .carrito-sidebar {
   position: fixed;
   top: 0;
-  right: -480px;
-  width: 440px;
+  right: -520px;
+  width: 500px;
   max-width: 95vw;
   height: 100vh;
   background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 100%);
@@ -414,12 +488,12 @@ const irAPagar = async () => {
 /* ==================== TABLA HEADER ==================== */
 .carrito-tabla-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 0.75rem;
-  padding: 0.85rem 1.5rem;
+  grid-template-columns: 3.5fr 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
   background: linear-gradient(135deg, #b08d57 0%, #8b6f47 100%);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -485,7 +559,7 @@ const irAPagar = async () => {
 }
 
 .carrito-vacio-subtexto {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #8b7355;
   margin: 0;
 }
@@ -494,13 +568,14 @@ const irAPagar = async () => {
 /* ==================== CART ITEM ==================== */
 .carrito-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 3.5fr 1fr 1fr;
+  gap: 1.5rem;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
   border-bottom: 1px solid #e8e0d5;
   transition: all 0.2s ease;
   background: #fff;
+  min-height: 120px;
 }
 
 .carrito-item:hover {
@@ -518,14 +593,14 @@ const irAPagar = async () => {
 .prod-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   min-width: 0;
 }
 
 .prod-img-placeholder {
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d5 100%);
@@ -546,42 +621,42 @@ const irAPagar = async () => {
 .prod-detalles {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   min-width: 0;
 }
 
 .prod-detalles p {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #3e2723;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   line-height: 1.4;
+  padding-right: 0.5rem;
 }
 
 .btn-eliminar {
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.08) 0%, rgba(220, 53, 69, 0.04) 100%);
-  border: 1px solid rgba(220, 53, 69, 0.2);
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+  border: 1px solid rgba(220, 53, 69, 0.25);
   cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.4rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   color: #dc3545;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
+  gap: 0.4rem;
   align-self: flex-start;
+  flex-shrink: 0;
 }
 
 .btn-eliminar:hover {
-  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.08) 100%);
-  border-color: rgba(220, 53, 69, 0.4);
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.2) 0%, rgba(220, 53, 69, 0.1) 100%);
+  border-color: rgba(220, 53, 69, 0.5);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+  box-shadow: 0 3px 10px rgba(220, 53, 69, 0.2);
 }
 
 .btn-eliminar svg {
@@ -595,7 +670,7 @@ const irAPagar = async () => {
 
 /* ==================== PRICE ==================== */
 .prod-precio {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #532721;
   text-align: center;
@@ -715,7 +790,7 @@ const irAPagar = async () => {
   border: 2px solid #e8e0d5;
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-family: var(--font-family-body, sans-serif);
   background: #fff;
   color: #3e2723;
@@ -815,11 +890,6 @@ const irAPagar = async () => {
     grid-template-columns: 2fr 1fr 1fr;
   }
 
-  .carrito-tabla-header span:nth-child(2),
-  .prod-precio {
-    display: none;
-  }
-
   .carrito-header {
     padding: 1rem 1.25rem;
   }
@@ -871,5 +941,31 @@ const irAPagar = async () => {
   .prod-total {
     text-align: left;
   }
+}
+
+/* SweetAlert z-index fix for cart */
+:deep(.swal2-container-cart) {
+  z-index: 11000 !important;
+}
+
+:deep(.swal2-popup-cart) {
+  z-index: 11001 !important;
+}
+
+:deep(.swal2-title-cart) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #532721;
+}
+
+:deep(.swal2-html-container-cart) {
+  font-size: 1.1rem;
+  color: #3e2723;
+  line-height: 1.6;
+}
+
+:deep(.swal2-html-container-cart strong) {
+  color: #dc3545;
+  font-weight: 700;
 }
 </style>

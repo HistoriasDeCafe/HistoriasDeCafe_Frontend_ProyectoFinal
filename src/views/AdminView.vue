@@ -71,17 +71,16 @@
             <div class="widget-card">
               <h3><i class="bi bi-box-seam"></i> Productos Destacados</h3>
               <div class="featured-products">
-                <div class="featured-item">
-                  <span>Finca la Esmeralda-Filandia Quindio</span>
-                  <span class="badge">Top</span>
+                <div v-if="productosDestacados.length > 0">
+                  <div v-for="(producto, index) in productosDestacados" :key="producto.id" class="featured-item">
+                    <span>{{ producto.nombre }}</span>
+                    <span class="badge" :class="index === 0 ? 'badge-top' : index === 1 ? 'badge-nuevo' : 'badge-popular'">
+                      {{ index === 0 ? 'Top' : index === 1 ? 'Nuevo' : 'Popular' }}
+                    </span>
+                  </div>
                 </div>
-                <div class="featured-item">
-                  <span>Finca el Nido-Caldas</span>
-                  <span class="badge">Nuevo</span>
-                </div>
-                <div class="featured-item">
-                  <span>Finca San José-Quindio</span>
-                  <span class="badge">Popular</span>
+                <div v-else class="empty-featured">
+                  <p>No hay productos destacados</p>
                 </div>
               </div>
             </div>
@@ -93,16 +92,22 @@
           <div class="table-section">
             <div class="table-header-container">
               <h3>Gestión de Productos</h3>
+              <div style="font-size: 0.9rem; color: #666;">
+                Total: {{ listaProductos.length }} productos | Página {{ currentPageProductos }} de {{ totalPaginasProductos }}
+              </div>
               <button class="btn-cafe-admin" @click="showModal = true">
                 <i class="bi bi-plus-circle"></i> Añadir Producto
               </button>
             </div>
             
             <div class="table-container">
-              <table class="table">
+              <table class="table table-expandable">
                 <thead>
                   <tr>
-                    <th class="text-left">Nombre del Producto</th>
+                    <th class="text-left">Producto</th>
+                    <th class="text-left">Origen</th>
+                    <th class="text-left">Tostado</th>
+                    <th class="text-left">Región</th>
                     <th class="text-right">Precio</th>
                     <th class="text-right">Stock</th>
                     <th class="text-center">Estado</th>
@@ -111,7 +116,15 @@
                 </thead>
                 <tbody>
                   <tr v-for="p in productosPaginados" :key="p.id">
-                    <td class="text-left">{{ p.nombre }}</td>
+                    <td class="text-left">
+                      <div class="product-cell">
+                        <div class="product-name">{{ p.nombre }}</div>
+                        <div class="product-desc" v-if="p.descripcion">{{ p.descripcion.substring(0, 50) }}{{ p.descripcion.length > 50 ? '...' : '' }}</div>
+                      </div>
+                    </td>
+                    <td class="text-left">{{ p.origen }}</td>
+                    <td class="text-left">{{ p.tostado }}</td>
+                    <td class="text-left">{{ getRegionName(p.region) }}</td>
                     <td class="text-right">${{ p.precio.toLocaleString() }}</td>
                     <td class="text-right">{{ p.stock }}</td>
                     <td class="text-center">
@@ -124,7 +137,7 @@
                         <button class="btn-table-edit" @click="editarProducto(p)">
                           <i class="bi bi-pencil"></i> Editar
                         </button>
-                        <button class="btn-table-delete" @click="eliminar(p.id)">
+                        <button class="btn-table-delete" @click="eliminar(p.id || p.id_product)">
                           <i class="bi bi-trash"></i> Eliminar
                         </button>
                       </div>
@@ -172,10 +185,84 @@
 
         <!-- ORDENES VIEW -->
         <div v-if="activeView === 'Ordenes'">
-          <div class="empty-state">
-            <i class="bi bi-receipt"></i>
-            <h3>Gestión de Órdenes</h3>
-            <p>Próximamente</p>
+          <div class="table-section">
+            <div class="table-header-container">
+              <h3>Gestión de Órdenes</h3>
+              <div style="font-size: 0.9rem; color: #666;">
+                Total: {{ listaOrdenes.length }} órdenes | Página {{ currentPageOrdenes }} de {{ totalPaginasOrdenes }}
+              </div>
+              <button class="btn-cafe-admin" @click="cargarOrdenesDesdeBackend">
+                <i class="bi bi-arrow-clockwise"></i> Recargar
+              </button>
+            </div>
+            
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="text-left">ID Orden</th>
+                    <th class="text-left">Fecha</th>
+                    <th class="text-left">Usuario ID</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-right">Subtotal</th>
+                    <th class="text-right">Total</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="orden in ordenesPaginadas" :key="orden.id">
+                    <td class="text-left">{{ orden.id }}</td>
+                    <td class="text-left">{{ formatearFecha(orden.orderDate) }}</td>
+                    <td class="text-left">{{ orden.userId }}</td>
+                    <td class="text-center">
+                      <span class="status-pill" :class="orden.stateOrder === 'Completada' ? 'badge-activo' : 'badge-inactivo'">
+                        {{ orden.stateOrder }}
+                      </span>
+                    </td>
+                    <td class="text-right">{{ formatearMoneda(orden.subtotal) }}</td>
+                    <td class="text-right">{{ formatearMoneda(orden.total) }}</td>
+                    <td class="text-center">
+                      <div class="actions-wrapper">
+                        <button class="btn-table-edit" @click="verDetallesOrden(orden)">
+                          <i class="bi bi-eye"></i> Ver Detalles
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div v-if="listaOrdenes.length === 0" class="empty-state">
+              <i class="bi bi-receipt"></i>
+              <p>No hay órdenes registradas</p>
+            </div>
+            
+            <!-- Paginación órdenes -->
+            <div v-if="listaOrdenes.length > 0" class="pagination-container">
+              <div class="pagination-info">
+                Mostrando {{ (currentPageOrdenes - 1) * itemsPerPageOrdenes + 1 }} - {{ Math.min(currentPageOrdenes * itemsPerPageOrdenes, listaOrdenes.length) }} de {{ listaOrdenes.length }} órdenes
+              </div>
+              <div class="pagination-controls">
+                <button 
+                  class="pagination-btn" 
+                  :disabled="currentPageOrdenes === 1"
+                  @click="currentPageOrdenes--"
+                >
+                  <i class="bi bi-chevron-left"></i> Anterior
+                </button>
+                <span class="pagination-pages">
+                  Página {{ currentPageOrdenes }} de {{ totalPaginasOrdenes }}
+                </span>
+                <button 
+                  class="pagination-btn" 
+                  :disabled="currentPageOrdenes === totalPaginasOrdenes"
+                  @click="currentPageOrdenes++"
+                >
+                  Siguiente <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -184,7 +271,7 @@
           <div class="table-section">
             <div class="table-header-container">
               <h3>Gestión de Usuarios</h3>
-              <button class="btn-cafe-admin" @click="showUserModal = true">
+              <button class="btn-cafe-admin" @click="openUserModal">
                 <i class="bi bi-plus-circle"></i> Añadir Usuario
               </button>
             </div>
@@ -230,7 +317,7 @@
             <div v-if="listaUsuarios.length === 0" class="empty-state">
               <i class="bi bi-people"></i>
               <p>No hay usuarios registrados</p>
-              <button class="btn-cafe-admin" @click="showUserModal = true">
+              <button class="btn-cafe-admin" @click="openUserModal">
                 <i class="bi bi-plus-circle"></i> Agregar Primer Usuario
               </button>
             </div>
@@ -275,31 +362,35 @@
     </main>
 
     <!-- MODAL PRODUCTO -->
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Añadir Nuevo Producto</h3>
-          <button class="close-btn" @click="showModal = false">
+          <h3>{{ isEditMode ? 'Editar Producto' : 'Añadir Nuevo Producto' }}</h3>
+          <button class="close-btn" @click="closeModal">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
         <div class="modal-body">
-          <ProductForm @save="agregarNuevo" />
+          <ProductForm 
+            :product-to-edit="productToEdit" 
+            @save="handleProductSave" 
+            @cancel="closeModal"
+          />
         </div>
       </div>
     </div>
 
     <!-- MODAL USUARIO -->
-    <div v-if="showUserModal" class="modal-overlay" @click.self="showUserModal = false">
+    <div v-if="showUserModal" class="modal-overlay" @click.self="closeUserModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Añadir Nuevo Usuario</h3>
-          <button class="close-btn" @click="showUserModal = false">
+          <h3>{{ isUserEditMode ? 'Editar Usuario' : 'Añadir Nuevo Usuario' }}</h3>
+          <button class="close-btn" @click="closeUserModal">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
         <div class="modal-body">
-          <form @submit.prevent="agregarUsuario">
+          <form @submit.prevent="handleUserSave">
             <div class="form-group">
               <label>Nombre Completo</label>
               <input type="text" v-model="nuevoUsuario.nombre" required placeholder="Ingresa el nombre">
@@ -309,8 +400,8 @@
               <input type="email" v-model="nuevoUsuario.email" required placeholder="Ingresa el email">
             </div>
             <div class="form-group">
-              <label>Contraseña</label>
-              <input type="password" v-model="nuevoUsuario.password" required placeholder="Ingresa la contraseña">
+              <label>Contraseña {{ isUserEditMode ? '(dejar vacío para mantener actual)' : '' }}</label>
+              <input type="password" v-model="nuevoUsuario.password" :required="!isUserEditMode" :placeholder="isUserEditMode ? 'Dejar vacío para mantener contraseña actual' : 'Ingresa la contraseña'">
             </div>
             <div class="form-group">
               <label>Rol</label>
@@ -319,10 +410,80 @@
                 <option value="ADMIN">Administrador</option>
               </select>
             </div>
+            <div class="form-group" v-if="isUserEditMode">
+              <label>Estado</label>
+              <select v-model="nuevoUsuario.estado">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
             <button type="submit" class="btn-cafe-admin" style="width: 100%; margin-top: 20px;">
-              <i class="bi bi-check-circle"></i> Guardar Usuario
+              <i class="bi bi-check-circle"></i> {{ isUserEditMode ? 'Actualizar Usuario' : 'Guardar Usuario' }}
             </button>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DETALLES DE ORDEN -->
+    <div v-if="showOrderModal && ordenSeleccionada" class="modal-overlay" @click.self="closeOrderModal">
+      <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+          <h3>Detalles de Orden #{{ ordenSeleccionada.id }}</h3>
+          <button class="close-btn" @click="closeOrderModal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="order-details">
+            <div class="detail-row">
+              <span class="detail-label">ID Orden:</span>
+              <span class="detail-value">{{ ordenSeleccionada.id }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Fecha:</span>
+              <span class="detail-value">{{ formatearFecha(ordenSeleccionada.orderDate) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Usuario ID:</span>
+              <span class="detail-value">{{ ordenSeleccionada.userId }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Estado:</span>
+              <span class="detail-value">
+                <span class="status-pill" :class="ordenSeleccionada.stateOrder === 'Completada' ? 'badge-activo' : 'badge-inactivo'">
+                  {{ ordenSeleccionada.stateOrder }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Subtotal:</span>
+              <span class="detail-value">{{ formatearMoneda(ordenSeleccionada.subtotal) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Total:</span>
+              <span class="detail-value" style="font-weight: bold; font-size: 1.2rem;">{{ formatearMoneda(ordenSeleccionada.total) }}</span>
+            </div>
+            
+            <hr style="margin: 1.5rem 0; border: none; height: 2px; background: linear-gradient(90deg, #e8e0d5 0%, #b08d57 50%, #e8e0d5 100%);">
+            
+            <h4 style="margin-bottom: 1rem; color: #532721;">Productos en la Orden</h4>
+            <div v-if="ordenSeleccionada.details && ordenSeleccionada.details.length > 0">
+              <div v-for="(detalle, index) in ordenSeleccionada.details" :key="index" class="product-detail-item">
+                <div class="product-detail-info">
+                  <span class="product-detail-label">Producto ID:</span>
+                  <span class="product-detail-value">{{ detalle.productId }}</span>
+                </div>
+                <div class="product-detail-info">
+                  <span class="product-detail-label">Cantidad:</span>
+                  <span class="product-detail-value">{{ detalle.quantityProducts }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="empty-details">
+              <p>No hay detalles de productos disponibles</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -338,9 +499,17 @@ import Swal from 'sweetalert2';
 const activeView = ref('Dashboard');
 const showModal = ref(false);
 const showUserModal = ref(false);
+const showOrderModal = ref(false);
 const listaProductos = ref([]);
 const listaUsuarios = ref([]);
+const listaOrdenes = ref([]);
+const listaPagos = ref([]);
+const ordenSeleccionada = ref(null);
 const animationClass = ref('fade-in');
+const productToEdit = ref(null);
+const isEditMode = ref(false);
+const userToEdit = ref(null);
+const isUserEditMode = ref(false);
 
 // Paginación productos
 const currentPageProductos = ref(1);
@@ -349,6 +518,10 @@ const itemsPerPageProductos = ref(5);
 // Paginación usuarios
 const currentPageUsuarios = ref(1);
 const itemsPerPageUsuarios = ref(5);
+
+// Paginación órdenes
+const currentPageOrdenes = ref(1);
+const itemsPerPageOrdenes = ref(5);
 
 // Formulario de nuevo usuario
 const nuevoUsuario = ref({
@@ -363,10 +536,154 @@ const nuevoUsuario = ref({
 const currentUser = ref(null);
 const currentUserRole = ref('');
 
-// Estadísticas del dashboard
-const totalVentas = ref(0);
-const totalOrdenes = ref(0);
-const totalUsuarios = ref(0);
+// Estadísticas del dashboard (ahora computed properties para datos reales)
+const totalVentas = computed(() => {
+  return listaOrdenes.value.reduce((sum, orden) => sum + (orden.total || 0), 0);
+});
+
+const totalOrdenes = computed(() => {
+  return listaOrdenes.value.length;
+});
+
+const totalUsuarios = computed(() => {
+  return listaUsuarios.value.length;
+});
+
+const totalStockBajo = computed(() => listaProductos.value.filter(p => p.stock < 5).length);
+
+// Productos destacados (basados en datos reales)
+const productosDestacados = computed(() => {
+  // Ordenar por stock (menor stock = más vendido) y tomar los primeros 3
+  return listaProductos.value
+    .filter(p => p.estado === 'activo')
+    .sort((a, b) => a.stock - b.stock)
+    .slice(0, 3);
+});
+
+// Función para cargar usuarios desde backend
+const cargarUsuariosDesdeBackend = async () => {
+  const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080'
+    : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/users`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const users = await response.json();
+      listaUsuarios.value = users.map(u => ({
+        id: u.id,
+        nombre: u.name,
+        email: u.email,
+        rol: u.role,
+        estado: u.stateActive ? 'activo' : 'inactivo'
+      }));
+      localStorage.setItem('usuarios', JSON.stringify(listaUsuarios.value));
+      console.log('Usuarios recargados desde backend:', listaUsuarios.value.length);
+    } else {
+      // Fallback to localStorage if API fails
+      const usersData = localStorage.getItem('usuarios');
+      if (usersData) listaUsuarios.value = JSON.parse(usersData);
+    }
+  } catch (error) {
+    console.error('Error recargando usuarios:', error);
+    // Fallback to localStorage if API fails
+    const usersData = localStorage.getItem('usuarios');
+    if (usersData) listaUsuarios.value = JSON.parse(usersData);
+  }
+};
+
+// Función para cargar órdenes desde backend
+const cargarOrdenesDesdeBackend = async () => {
+  const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080'
+    : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const orders = await response.json();
+      listaOrdenes.value = orders.map(o => ({
+        id: o.id,
+        userId: o.userId,
+        stateOrder: o.stateOrder,
+        subtotal: o.subtotal,
+        total: o.total,
+        orderDate: o.orderDate,
+        details: o.details || []
+      }));
+      console.log('Órdenes cargadas desde backend:', listaOrdenes.value.length);
+    } else {
+      console.error('Error al cargar órdenes:', response.status);
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#d93025',
+        title: 'Error al cargar órdenes',
+        text: `No se pudieron cargar las órdenes. Status: ${response.status}`,
+        confirmButtonColor: '#532721'
+      });
+    }
+  } catch (error) {
+    console.error('Error cargando órdenes:', error);
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor para cargar las órdenes.',
+      confirmButtonColor: '#532721'
+    });
+  }
+};
+
+// Función para cargar pagos desde backend
+const cargarPagosDesdeBackend = async () => {
+  const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080'
+    : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/payments`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const payments = await response.json();
+      listaPagos.value = payments.map(p => ({
+        id: p.id,
+        orderId: p.orderId,
+        transactionNumber: p.transactionNumber,
+        transactionDate: p.transactionDate,
+        transactionStatus: p.transactionStatus,
+        paymentUrl: p.paymentUrl
+      }));
+      console.log('Pagos cargados desde backend:', listaPagos.value.length);
+    } else {
+      console.error('Error al cargar pagos:', response.status);
+    }
+  } catch (error) {
+    console.error('Error cargando pagos:', error);
+  }
+};
 
 // Función para cargar productos desde backend
 const cargarProductosDesdeBackend = async () => {
@@ -376,6 +693,9 @@ const cargarProductosDesdeBackend = async () => {
 
   try {
     const token = localStorage.getItem('authToken');
+    console.log('Token presente:', !!token);
+    console.log('Token valor:', token ? token.substring(0, 20) + '...' : 'N/A');
+    
     const response = await fetch(`${API_URL}/products`, {
       method: 'GET',
       headers: { 
@@ -384,19 +704,52 @@ const cargarProductosDesdeBackend = async () => {
       }
     });
 
+    console.log('Status de respuesta productos:', response.status);
+    console.log('Response headers:', response.headers);
+
     if (response.ok) {
       const products = await response.json();
+      console.log('Respuesta cruda de API:', products);
+      console.log('Número de productos:', products.length);
+      
+      if (products.length > 0) {
+        console.log('Primer producto:', products[0]);
+        console.log('Campos del primer producto:', Object.keys(products[0]));
+      }
+      
       listaProductos.value = products.map(p => ({
-        id: p.id,
-        nombre: p.name,
-        precio: p.price,
+        id: p.idProduct || p.id_product || p.id,
+        nombre: p.name || 'Sin nombre',
+        origen: p.origin || p.origen || '',
+        tostado: p.roast || p.tostado || '',
+        region: p.categoryId || p.region || '',
+        descripcion: p.description || '',
+        precio: p.price || 0,
         stock: p.stock || 0,
+        imagen: p.imagen || '',
         estado: 'activo'
       }));
-      console.log('Productos recargados desde backend:', listaProductos.value.length);
+      console.log('Productos mapeados:', listaProductos.value.length);
+      console.log('Productos detallados:', listaProductos.value);
+    } else {
+      console.error('Error en respuesta de productos:', response.status, response.statusText);
+      Swal.fire({
+        icon: 'error',
+        iconColor: '#d93025',
+        title: 'Error al cargar productos',
+        text: `No se pudieron cargar los productos. Status: ${response.status}`,
+        confirmButtonColor: '#532721'
+      });
     }
   } catch (error) {
     console.error('Error recargando productos:', error);
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor para cargar los productos.',
+      confirmButtonColor: '#532721'
+    });
   }
 };
 
@@ -411,6 +764,20 @@ onMounted(async () => {
     console.log('Rol del usuario:', currentUserRole.value);
   }
   
+  // Verificar si el usuario tiene rol ADMIN
+  if (currentUserRole.value !== 'ADMIN') {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Acceso Denegado',
+      text: 'No puedes acceder al dashboard de administrador.',
+      confirmButtonColor: '#532721'
+    }).then(() => {
+      window.location.href = '/';
+    });
+    return;
+  }
+  
   const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8080'
     : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
@@ -419,54 +786,77 @@ onMounted(async () => {
   await cargarProductosDesdeBackend();
 
   // Fetch users from API
-  try {
-    const response = await fetch(`${API_URL}/users`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
+  await cargarUsuariosDesdeBackend();
 
-    if (response.ok) {
-      const users = await response.json();
-      listaUsuarios.value = users.map(u => ({
-        id: u.id,
-        nombre: u.name,
-        email: u.email,
-        rol: u.role,
-        estado: u.stateActive ? 'activo' : 'inactivo'
-      }));
-      localStorage.setItem('usuarios', JSON.stringify(listaUsuarios.value));
-    } else {
-      // Fallback to localStorage if API fails
-      const usersData = localStorage.getItem('usuarios');
-      if (usersData) listaUsuarios.value = JSON.parse(usersData);
-    }
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    // Fallback to localStorage if API fails
-    const usersData = localStorage.getItem('usuarios');
-    if (usersData) listaUsuarios.value = JSON.parse(usersData);
-  }
+  // Fetch orders from API
+  await cargarOrdenesDesdeBackend();
+
+  // Fetch payments from API
+  await cargarPagosDesdeBackend();
 });
 
-const agregarNuevo = async (productPayload) => {
+const closeModal = () => {
+  showModal.value = false;
+  productToEdit.value = null;
+  isEditMode.value = false;
+};
+
+const handleProductSave = async (productPayload) => {
   const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8080'
     : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
 
   const token = localStorage.getItem('authToken');
+  const isEdit = productPayload.isEditMode;
+  const productId = productPayload.id;
+
   console.log('Token JWT para productos:', token ? 'Token existe' : 'Token no existe');
   console.log('Rol del usuario actual:', currentUserRole.value);
+  console.log('Modo:', isEdit ? 'Edición' : 'Creación');
   console.log('Payload del producto:', productPayload);
 
   try {
-    const response = await fetch(`${API_URL}/products`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(productPayload)
-    });
+    let response;
+    
+    if (isEdit) {
+      // UPDATE: PUT request
+      response = await fetch(`${API_URL}/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: productPayload.name,
+          origen: productPayload.origin,
+          tostado: productPayload.roast,
+          description: productPayload.description,
+          price: productPayload.price,
+          stock: productPayload.stock,
+          categoryId: productPayload.categoryId,
+          imagen: productPayload.imagen
+        })
+      });
+    } else {
+      // CREATE: POST request
+      response = await fetch(`${API_URL}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: productPayload.name,
+          origen: productPayload.origin,
+          tostado: productPayload.roast,
+          description: productPayload.description,
+          price: productPayload.price,
+          stock: productPayload.stock,
+          categoryId: productPayload.categoryId,
+          imagen: productPayload.imagen
+        })
+      });
+    }
 
     console.log('Response status productos:', response.status);
     console.log('Response ok productos:', response.ok);
@@ -476,7 +866,7 @@ const agregarNuevo = async (productPayload) => {
         icon: 'error',
         iconColor: '#d93025',
         title: 'Permisos insuficientes',
-        text: 'Debes iniciar sesión con un usuario ADMIN para crear productos.',
+        text: 'Debes iniciar sesión con un usuario ADMIN para gestionar productos.',
         confirmButtonColor: '#532721'
       });
       return;
@@ -484,29 +874,41 @@ const agregarNuevo = async (productPayload) => {
 
     if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
 
-    const nuevoProducto = await response.json();
+    const savedProduct = await response.json();
     
-    // Recargar productos desde backend para evitar duplicaciones
+    // Recargar productos desde backend para asegurar consistencia
     await cargarProductosDesdeBackend();
     
-    showModal.value = false;
+    closeModal();
     
-    Swal.fire({
-      icon: 'success',
-      iconColor: '#532721',
-      title: '¡Café Registrado!',
-      text: 'El producto y su imagen en la nube se guardaron exitosamente.',
-      confirmButtonColor: '#B08D57',
-      timer: 2000,
-      showConfirmButton: false
-    });
+    if (isEdit) {
+      Swal.fire({
+        icon: 'success',
+        iconColor: '#532721',
+        title: '¡Producto Actualizado!',
+        text: 'El producto ha sido actualizado exitosamente.',
+        confirmButtonColor: '#B08D57',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'success',
+        iconColor: '#532721',
+        title: '¡Café Registrado!',
+        text: 'El producto y su imagen en la nube se guardaron exitosamente.',
+        confirmButtonColor: '#B08D57',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
   } catch (error) {
-    console.error('Error al crear producto:', error);
+    console.error('Error al guardar producto:', error);
     Swal.fire({
       icon: 'error',
       iconColor: '#d93025',
       title: 'Error',
-      text: error.message || 'No se pudo registrar el producto. Verifica que los campos cumplan las validaciones del backend.',
+      text: error.message || 'No se pudo guardar el producto. Verifica que los campos cumplan las validaciones del backend.',
       confirmButtonColor: '#532721'
     });
   }
@@ -514,7 +916,54 @@ const agregarNuevo = async (productPayload) => {
 
 const editarProducto = (producto) => {
   console.log('Editar producto:', producto);
-  // Implementar lógica de edición
+  console.log('Producto recibido ID:', producto.id);
+  
+  // Buscar el producto completo en la lista (manejar id, id_product, idProduct)
+  const productoCompleto = listaProductos.value.find(p => p.id === producto.id || p.id === producto.id_product || p.id === producto.idProduct);
+  
+  console.log('Producto completo encontrado:', productoCompleto);
+  
+  if (productoCompleto) {
+    // Mapear los datos al formato esperado por el formulario
+    // Convertir tostado del backend al formato del select si es necesario
+    let tostadoValue = productoCompleto.tostado || '';
+    // Si el backend devuelve valores como 'TOSTADO_OSCURO', mantenerlos
+    // Si devuelve valores como 'Oscuro', convertir a formato enum
+    if (tostadoValue && !tostadoValue.startsWith('TOSTADO_')) {
+      const tostadoMap = {
+        'Oscuro': 'TOSTADO_OSCURO',
+        'Medio': 'TOSTADO_MEDIO',
+        'Claro': 'TOSTADO_CLARO'
+      };
+      tostadoValue = tostadoMap[tostadoValue] || tostadoValue;
+    }
+    
+    productToEdit.value = {
+      id: productoCompleto.id,
+      nombre: productoCompleto.nombre,
+      origen: productoCompleto.origen || '',
+      tostado: tostadoValue,
+      region: productoCompleto.region || '',
+      stock: productoCompleto.stock,
+      precio: productoCompleto.precio,
+      descripcion: productoCompleto.descripcion || '',
+      imagen: productoCompleto.imagen || ''
+    };
+    
+    console.log('productToEdit.value establecido:', productToEdit.value);
+    console.log('ID en productToEdit:', productToEdit.value.id);
+    
+    isEditMode.value = true;
+    showModal.value = true;
+  } else {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Error',
+      text: 'No se encontró el producto para editar.',
+      confirmButtonColor: '#532721'
+    });
+  }
 };
 
 const eliminar = async (id) => {
@@ -642,7 +1091,143 @@ const agregarUsuario = async () => {
 
 const editarUsuario = (usuario) => {
   console.log('Editar usuario:', usuario);
-  // Implementar lógica de edición
+  
+  // Buscar el usuario completo en la lista
+  const usuarioCompleto = listaUsuarios.value.find(u => u.id === usuario.id);
+  
+  if (usuarioCompleto) {
+    // Mapear los datos al formulario
+    nuevoUsuario.value = {
+      nombre: usuarioCompleto.nombre || '',
+      email: usuarioCompleto.email || '',
+      password: '', // Dejar vacío para mantener contraseña actual
+      rol: usuarioCompleto.rol || 'CLIENT',
+      estado: usuarioCompleto.estado || 'activo'
+    };
+    
+    userToEdit.value = usuarioCompleto;
+    isUserEditMode.value = true;
+    showUserModal.value = true;
+  } else {
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Error',
+      text: 'No se encontró el usuario para editar.',
+      confirmButtonColor: '#532721'
+    });
+  }
+};
+
+const openUserModal = () => {
+  isUserEditMode.value = false;
+  userToEdit.value = null;
+  // Reset form for create mode
+  nuevoUsuario.value = {
+    nombre: '',
+    email: '',
+    password: '',
+    rol: 'CLIENT',
+    estado: 'activo'
+  };
+  showUserModal.value = true;
+};
+
+const closeUserModal = () => {
+  showUserModal.value = false;
+  isUserEditMode.value = false;
+  userToEdit.value = null;
+  // Reset form
+  nuevoUsuario.value = {
+    nombre: '',
+    email: '',
+    password: '',
+    rol: 'CLIENT',
+    estado: 'activo'
+  };
+};
+
+const handleUserSave = async () => {
+  const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080'
+    : 'https://e-commerce-historias-de-cafe-backend.onrender.com';
+
+  const token = localStorage.getItem('authToken');
+  const isEdit = isUserEditMode.value;
+  const userId = userToEdit.value?.id;
+
+  console.log('Token JWT para usuarios:', token ? 'Token existe' : 'Token no existe');
+  console.log('Modo:', isEdit ? 'Edición' : 'Creación');
+  console.log('Payload del usuario:', nuevoUsuario.value);
+
+  try {
+    let response;
+    
+    if (isEdit) {
+      // UPDATE: PATCH request to /users/{id} (partial update)
+      const updatePayload = {
+        name: nuevoUsuario.value.nombre,
+        email: nuevoUsuario.value.email,
+        role: nuevoUsuario.value.rol,
+        stateActive: nuevoUsuario.value.estado === 'activo'
+      };
+      // Solo incluir contraseña si se proporcionó una nueva
+      if (nuevoUsuario.value.password) {
+        updatePayload.passwordHash = nuevoUsuario.value.password;
+      }
+      
+      response = await fetch(`${API_URL}/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatePayload)
+      });
+    } else {
+      // CREATE: POST request to /auth/register
+      response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: nuevoUsuario.value.nombre,
+          email: nuevoUsuario.value.email,
+          password: nuevoUsuario.value.password
+        })
+      });
+    }
+
+    console.log('Response status usuarios:', response.status);
+
+    if (response.ok) {
+      Swal.fire({
+        icon: 'success',
+        iconColor: '#532721',
+        title: isEdit ? '¡Usuario Actualizado!' : '¡Usuario Registrado!',
+        text: isEdit ? 'El usuario se actualizó exitosamente.' : 'El usuario se registró exitosamente.',
+        confirmButtonColor: '#B08D57',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      
+      closeUserModal();
+      // Recargar usuarios desde backend
+      await cargarUsuariosDesdeBackend();
+    } else {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Error al guardar usuario:', error);
+    Swal.fire({
+      icon: 'error',
+      iconColor: '#d93025',
+      title: 'Error',
+      text: error.message || 'No se pudo guardar el usuario. Verifica que los campos cumplan las validaciones del backend.',
+      confirmButtonColor: '#532721'
+    });
+  }
 };
 
 const eliminarUsuario = async (id) => {
@@ -719,13 +1304,27 @@ const eliminarUsuario = async (id) => {
   }
 };
 
-const totalStockBajo = computed(() => listaProductos.value.filter(p => p.stock < 5).length);
+// Helper function to get region name from ID
+const getRegionName = (regionId) => {
+  const regions = {
+    '1': 'Andina',
+    '2': 'Caribe',
+    '3': 'Pacífica',
+    '4': 'Orinoquía',
+    '5': 'Amazonía'
+  };
+  return regions[regionId] || regionId || '-';
+};
 
 // Computed para productos paginados
 const productosPaginados = computed(() => {
   const start = (currentPageProductos.value - 1) * itemsPerPageProductos.value;
   const end = start + itemsPerPageProductos.value;
-  return listaProductos.value.slice(start, end);
+  const paginated = listaProductos.value.slice(start, end);
+  console.log('Productos totales:', listaProductos.value.length);
+  console.log('Página actual:', currentPageProductos.value);
+  console.log('Productos paginados:', paginated.length);
+  return paginated;
 });
 
 const totalPaginasProductos = computed(() => {
@@ -742,6 +1341,53 @@ const usuariosPaginados = computed(() => {
 const totalPaginasUsuarios = computed(() => {
   return Math.ceil(listaUsuarios.value.length / itemsPerPageUsuarios.value);
 });
+
+// Computed para órdenes paginados
+const ordenesPaginadas = computed(() => {
+  const start = (currentPageOrdenes.value - 1) * itemsPerPageOrdenes.value;
+  const end = start + itemsPerPageOrdenes.value;
+  return listaOrdenes.value.slice(start, end);
+});
+
+const totalPaginasOrdenes = computed(() => {
+  return Math.ceil(listaOrdenes.value.length / itemsPerPageOrdenes.value);
+});
+
+// Helper para formatear fecha
+const formatearFecha = (fecha) => {
+  if (!fecha) return '-';
+  const date = new Date(fecha);
+  return date.toLocaleString('es-CO', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Helper para formatear moneda
+const formatearMoneda = (monto) => {
+  if (monto === null || monto === undefined) return '-';
+  return Number(monto).toLocaleString('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+};
+
+// Función para ver detalles de orden
+const verDetallesOrden = (orden) => {
+  ordenSeleccionada.value = orden;
+  showOrderModal.value = true;
+};
+
+// Función para cerrar modal de orden
+const closeOrderModal = () => {
+  showOrderModal.value = false;
+  ordenSeleccionada.value = null;
+};
 
 // Animación SPA
 watch(activeView, () => {
@@ -952,6 +1598,100 @@ watch(activeView, () => {
   color: #5f6368;
 }
 
+/* Estilos para detalles de orden en modal */
+.order-details {
+  padding: 10px 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f4f0ea;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #532721;
+  font-size: 0.95rem;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.product-detail-item {
+  background-color: #f9f7f4;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #e8e0d5;
+}
+
+.product-detail-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.product-detail-info:last-child {
+  margin-bottom: 0;
+}
+
+.product-detail-label {
+  font-weight: 600;
+  color: #532721;
+  font-size: 0.9rem;
+}
+
+.product-detail-value {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.empty-details {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Estilos para productos destacados */
+.empty-featured {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.featured-item .badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-top {
+  background-color: #ffd700;
+  color: #333;
+}
+
+.badge-nuevo {
+  background-color: #4caf50;
+  color: white;
+}
+
+.badge-popular {
+  background-color: #2196f3;
+  color: white;
+}
+
 /* Botones de acción dentro de la tabla */
 .actions-wrapper {
   display: flex;
@@ -990,6 +1730,86 @@ watch(activeView, () => {
 .btn-table-delete:hover {
   background-color: #d93025;
   color: white;
+}
+
+/* ==================== PRODUCT CELL STYLES ==================== */
+.product-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-weight: 600;
+  color: var(--color-text-default, #333);
+  font-size: 0.95rem;
+}
+
+.product-desc {
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ==================== EXPANDED TABLE STYLES ==================== */
+.table-expandable {
+  font-size: 0.9rem;
+}
+
+.table-expandable th {
+  font-size: 0.8rem;
+  padding: 12px 10px;
+}
+
+.table-expandable td {
+  padding: 12px 10px;
+  font-size: 0.85rem;
+}
+
+/* Responsive table for smaller screens */
+@media (max-width: 1200px) {
+  .table-expandable th:nth-child(4),
+  .table-expandable td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .table-expandable th:nth-child(3),
+  .table-expandable td:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-expandable {
+    font-size: 0.8rem;
+  }
+  
+  .table-expandable th,
+  .table-expandable td {
+    padding: 8px 6px;
+  }
+  
+  .product-name {
+    font-size: 0.85rem;
+  }
+  
+  .product-desc {
+    display: none;
+  }
+  
+  .actions-wrapper {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .btn-table-edit,
+  .btn-table-delete {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
 }
 
 /* ==================== BOTÓN AÑADIR PRODUCTO ==================== */

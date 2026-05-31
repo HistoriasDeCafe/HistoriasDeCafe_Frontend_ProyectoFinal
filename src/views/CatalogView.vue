@@ -45,7 +45,7 @@ const cargarProductosBackend = async () => {
     const listaProductos = await response.json();
     
     productosBackend.value = listaProductos.map(prod => ({
-      id: prod.id,
+      id: prod.idProduct || prod.id_product || prod.id,
       nombre: prod.name || "Café Premium",
       origen: prod.categoryName || "Región Origen",
       descripcion: prod.description || "Sin descripción disponible.",

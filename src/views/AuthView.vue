@@ -84,8 +84,44 @@ const isLogin = ref(true); // Controla si mostramos Login o Registro
 }
 
 @media (max-width: 768px) {
-    .container { flex-direction: column; text-align: center; }
-    .brand-section { padding-right: 0 !important; margin-bottom: 30px; }
+    .container { 
+        flex-direction: column; 
+        text-align: center; 
+        gap: 30px;
+        width: 95%;
+    }
+    .brand-section { 
+        padding-right: 0 !important; 
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .brand-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    .brand-section p {
+        font-size: 1rem;
+    }
+    .glass-card {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 15px;
+    }
+    .container {
+        width: 100%;
+        gap: 20px;
+    }
+    .brand-section h1 {
+        font-size: 2rem;
+    }
+    .brand-section p {
+        font-size: 0.9rem;
+    }
 }
 
 .brand-section {
@@ -95,7 +131,7 @@ const isLogin = ref(true); // Controla si mostramos Login o Registro
 }
 
 .brand-section h1 {
-    font-size: 4rem;
+    font-size: clamp(2rem, 5vw, 4rem);
     font-family: 'Playfair Display', serif;
     margin-bottom: 20px;
     font-weight: 700;

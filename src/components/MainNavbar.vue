@@ -35,6 +35,7 @@
           <a class="nav-link link3" @click.prevent="navigate('/catalogo')">Catálogo</a>
           <a class="nav-link link3" @click.prevent="navigate('/nosotros')">Nosotros</a>
           <a class="nav-link link3" @click.prevent="navigate('/contacto')">Contacto</a>
+          <a v-if="isAuthenticated && userRole === 'ADMIN'" class="nav-link link3 admin-link" @click.prevent="navigate('/admin')">Admin Dashboard</a>
         </div>
 
         <!-- Acciones -->
@@ -96,6 +97,7 @@ const router = useRouter();
 const isMenuOpen = ref(false);
 const isAuthenticated = ref(false);
 const userName = ref('');
+const userRole = ref('');
 
 onMounted(() => {
   const user = localStorage.getItem('usuarioActivo');
@@ -103,6 +105,7 @@ onMounted(() => {
     isAuthenticated.value = true;
     const userData = JSON.parse(user);
     userName.value = userData.name || userData.fullName || 'Usuario';
+    userRole.value = userData.role || 'CLIENT';
   }
   
   // Limpiar carrito al cargar si hay cambio de usuario

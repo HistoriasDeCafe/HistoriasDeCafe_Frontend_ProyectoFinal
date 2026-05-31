@@ -208,7 +208,7 @@ const handleLogin = async () => {
 
 .header-imagen {
     width: 100%;
-    height: 200px;
+    height: 180px;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -223,14 +223,14 @@ const handleLogin = async () => {
 }
 
 .contenedor-formulario {
-    padding: 35px 40px;
+    padding: 30px 35px;
 }
 
 .tabs {
     display: flex;
     justify-content: center;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 25px;
+    margin-bottom: 25px;
 }
 
 .tab {
@@ -362,5 +362,89 @@ const handleLogin = async () => {
     border-color: #ffffff;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .header-imagen {
+        height: 140px;
+    }
+
+    .contenedor-formulario {
+        padding: 20px 25px;
+    }
+
+    .tabs {
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        font-size: 1rem;
+    }
+
+    .campo-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .grupo-input i {
+        margin-right: 12px;
+        font-size: 1rem;
+    }
+
+    .grupo-input input {
+        font-size: 0.95rem;
+    }
+
+    .invalid-feedback {
+        font-size: 0.75rem;
+        padding-left: 32px;
+    }
+
+    .olvido-pass {
+        margin-bottom: 20px;
+    }
+
+    .olvido-pass a {
+        font-size: 0.8rem;
+    }
+
+    .btn-registrarse {
+        padding: 12px;
+        font-size: 1rem;
+        margin-top: 25px;
+    }
+}
+
+@media (max-width: 360px) {
+    .header-imagen {
+        height: 120px;
+    }
+
+    .contenedor-formulario {
+        padding: 15px 20px;
+    }
+
+    .tabs {
+        gap: 15px;
+    }
+
+    .tab {
+        font-size: 0.9rem;
+    }
+
+    .grupo-input i {
+        margin-right: 10px;
+        font-size: 0.9rem;
+    }
+
+    .grupo-input input {
+        font-size: 0.9rem;
+    }
+
+    .btn-registrarse {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="contenedor-admin">
-    <h2 class="text-center mb-4">Carga de Café</h2>
+    <h2 class="text-center mb-4">{{ isEditMode ? 'Editar Producto' : 'Carga de Café' }}</h2>
     <form @submit.prevent="handleSubmit" novalidate>
       
       <!-- Nombre (Marca) -->
@@ -21,9 +21,9 @@
       <div class="field-group">
         <select v-model="form.tostado" :class="{'is-invalid': errors.tostado}">
           <option value="" disabled selected>Seleccionar tipo de tostión</option>
-          <option value="Claro">Tostado Claro</option>
-          <option value="Medio">Tostado Medio</option>
-          <option value="Oscuro">Tostado Oscuro</option>
+          <option value="TOSTADO_CLARO">Tostado Claro</option>
+          <option value="TOSTADO_MEDIO">Tostado Medio</option>
+          <option value="TOSTADO_OSCURO">Tostado Oscuro</option>
         </select>
         <span v-if="errors.tostado" class="invalid-feedback">{{ errors.tostado }}</span>
       </div>
@@ -71,17 +71,26 @@
       </div>
 
       <button type="submit" class="btn-submit" :disabled="isSubmitting">
-        {{ isSubmitting ? 'Procesando...' : 'Agregar al Catálogo' }}
+        {{ isSubmitting ? 'Procesando...' : (isEditMode ? 'Actualizar Producto' : 'Agregar al Catálogo') }}
       </button>
     </form>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 
-const emit = defineEmits(['save']);
+const props = defineProps({
+  productToEdit: {
+    type: Object,
+    default: null
+  }
+});
+
+const emit = defineEmits(['save', 'cancel']);
+
+const isEditMode = ref(false);
 
 // Estado inicial del formulario
 const initialState = {
@@ -99,6 +108,36 @@ const form = reactive({ ...initialState });
 const errors = reactive({});
 const isSubmitting = ref(false);
 const imageFile = ref(null);
+const existingImageUrl = ref('');
+const productId = ref(null);
+
+// Cargar datos del producto cuando se está en modo edición
+watch(() => props.productToEdit, (newProduct) => {
+  console.log('ProductForm watch - productToEdit changed:', newProduct);
+  if (newProduct) {
+    console.log('Product ID recibido (id):', newProduct.id);
+    console.log('Product ID recibido (id_product):', newProduct.id_product);
+    console.log('Product ID recibido (idProduct):', newProduct.idProduct);
+    console.log('Todos los campos:', Object.keys(newProduct));
+    
+    isEditMode.value = true;
+    productId.value = newProduct.idProduct || newProduct.id_product || newProduct.id;
+    console.log('productId.value establecido:', productId.value);
+    form.nombre = newProduct.nombre || '';
+    form.origen = newProduct.origen || '';
+    form.tostado = newProduct.tostado || '';
+    form.region = newProduct.region || '';
+    form.stock = newProduct.stock || null;
+    form.precio = newProduct.precio || null;
+    form.descripcion = newProduct.descripcion || '';
+    existingImageUrl.value = newProduct.imagen || '';
+  } else {
+    isEditMode.value = false;
+    productId.value = null;
+    Object.assign(form, initialState);
+    existingImageUrl.value = '';
+  }
+}, { immediate: true });
 
 // Procesar imagen
 const handleImageChange = (e) => {
@@ -107,6 +146,11 @@ const handleImageChange = (e) => {
     imageFile.value = file;
     delete errors.imagen;
   }
+};
+
+// Cancelar edición
+const handleCancel = () => {
+  emit('cancel');
 };
 
 // Lógica de Validación
@@ -130,7 +174,7 @@ const validateForm = () => {
     errors.region = 'Selecciona la región del café';
     isValid = false;
   }
-  if (!imageFile.value) {
+  if (!imageFile.value && !existingImageUrl.value) {
     errors.imagen = 'Debes cargar una imagen';
     isValid = false;
   }
@@ -181,11 +225,15 @@ const handleSubmit = async () => {
   isSubmitting.value = true;
 
   try {
-    // Subir imagen a Cloudinary
-    const imageUrl = await uploadImageToCloudinary(imageFile.value);
+    // Subir imagen a Cloudinary solo si se seleccionó una nueva
+    let imageUrl = existingImageUrl.value;
+    if (imageFile.value) {
+      imageUrl = await uploadImageToCloudinary(imageFile.value);
+    }
 
     // Crear payload para el backend
     const productPayload = {
+      id: productId.value,
       name: form.nombre.trim(),
       origin: form.origen.trim(),
       roast: form.tostado,
@@ -193,15 +241,19 @@ const handleSubmit = async () => {
       price: parseFloat(form.precio),
       stock: parseInt(form.stock),
       categoryId: Number(form.region),
-      imagen: imageUrl
+      imagen: imageUrl,
+      isEditMode: isEditMode.value
     };
 
     // Emitir al padre para que haga la llamada a la API
     emit('save', productPayload);
 
-    // Reset del formulario
-    Object.assign(form, initialState);
-    imageFile.value = null;
+    // Reset del formulario solo en modo creación
+    if (!isEditMode.value) {
+      Object.assign(form, initialState);
+      imageFile.value = null;
+      existingImageUrl.value = '';
+    }
 
   } catch (error) {
     Swal.fire({
